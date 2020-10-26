@@ -5,10 +5,6 @@ const NodeExternals = require('webpack-node-externals');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-const isProduction = process.env.NODE_ENV === 'production';
-
-const mode = isProduction ? 'production' : 'development';
-
 const entryPath = Path.resolve(process.cwd(), 'src');
 const outputPath = Path.resolve(process.cwd(), 'build');
 
@@ -24,112 +20,115 @@ const getAliases = sourcePath => {
   }, {});
 }
 
-const frontendConfig = {
-  entry: {
-    index: frontendEntryPath
-  },
-  mode,
-  output: {
-    path: Path.resolve(outputPath, 'public'),
-    publicPath: '/'
-  },
-  resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.jsx'],
-    alias: getAliases(frontendEntryPath)
-  },
-  module: {
-    rules: [
-      {
-        test: /\.tsx?$/,
-        use: [
-          {
-            loader: 'babel-loader',
-            options: {
-              presets: ["@babel/preset-react"],
-              plugins: [
-                "@babel/plugin-proposal-class-properties",
-                "@babel/plugin-proposal-export-default-from"
-              ]
-            }
-          },
-          {
-            loader: 'ts-loader'
-          }
-        ]
-      },
-      {
-        test: /\.css$/,
-        use: [
-          MiniCssExtractPlugin.loader, 'css-loader'
-        ],
-      },
-      {
-        test: /\.(png|jpe?g|gif|svg)$/i,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: 'img/[path][name].[ext]',
-              context: 'src'
-            },
-          },
-        ],
-      },
-      {
-        test: /\.(woff|woff2|eot|ttf|otf)$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: 'fonts/[name].[ext]',
-            },
-          },
-        ],
-      },
-    ]
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: Path.resolve(frontendEntryPath, 'index.ejs')
-    }),
-    new MiniCssExtractPlugin({
-      filename: 'style.css'
-    })
-  ]
-}
+existsSync(outputPath) && rmSync(outputPath, { recursive: true });
 
-const backendConfig = {
-  target: 'node',
-  externals: [NodeExternals()],
-  entry: {
-    index: backendEntryPath
-  },
-  mode,
-  output: {
-    path: outputPath,
-    libraryTarget: "commonjs2",
-    libraryExport: 'default'
-  },
-  resolve: {
-    extensions: [ '.ts', '.js'],
-    alias: getAliases(backendEntryPath)
-  },
-  module: {
-    rules: [
-      {
-        test: /\.tsx?$/,
-        use: [
-          {
-            loader: 'ts-loader'
-          }
-        ]
-      }
+module.exports = (env = {}) => {
+  const { production } = env;
+  const mode = production ? 'production' : 'development';
+  
+  const frontendConfig = {
+    entry: {
+      index: frontendEntryPath
+    },
+    mode,
+    output: {
+      path: Path.resolve(outputPath, 'public'),
+      publicPath: '/'
+    },
+    resolve: {
+      extensions: ['.ts', '.tsx', '.js', '.jsx'],
+      alias: getAliases(frontendEntryPath)
+    },
+    module: {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          use: [
+            {
+              loader: 'babel-loader',
+              options: {
+                presets: ["@babel/preset-react"],
+                plugins: [
+                  "@babel/plugin-proposal-class-properties",
+                  "@babel/plugin-proposal-export-default-from"
+                ]
+              }
+            },
+            {
+              loader: 'ts-loader'
+            }
+          ]
+        },
+        {
+          test: /\.css$/,
+          use: [
+            MiniCssExtractPlugin.loader, 'css-loader'
+          ],
+        },
+        {
+          test: /\.(png|jpe?g|gif|svg)$/i,
+          use: [
+            {
+              loader: 'file-loader',
+              options: {
+                name: 'img/[path][name].[ext]',
+                context: 'src'
+              },
+            },
+          ],
+        },
+        {
+          test: /\.(woff|woff2|eot|ttf|otf)$/,
+          use: [
+            {
+              loader: 'file-loader',
+              options: {
+                name: 'fonts/[name].[ext]',
+              },
+            },
+          ],
+        },
+      ]
+    },
+    plugins: [
+      new HtmlWebpackPlugin({
+        template: Path.resolve(frontendEntryPath, 'index.ejs')
+      }),
+      new MiniCssExtractPlugin({
+        filename: 'style.css'
+      })
     ]
   }
+  
+  const backendConfig = {
+    target: 'node',
+    externals: [NodeExternals()],
+    entry: {
+      index: backendEntryPath
+    },
+    mode,
+    output: {
+      path: outputPath,
+      libraryTarget: "commonjs2",
+      libraryExport: 'default'
+    },
+    resolve: {
+      extensions: [ '.ts', '.js'],
+      alias: getAliases(backendEntryPath)
+    },
+    module: {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          use: [
+            {
+              loader: 'ts-loader'
+            }
+          ]
+        }
+      ]
+    }
+  }
+  
+  return [frontendConfig, backendConfig];
 }
-
-existsSync(outputPath) && rmSync(outputPath, {
-  recursive: true
-});
-
-module.exports = [frontendConfig, backendConfig];

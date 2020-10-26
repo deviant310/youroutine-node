@@ -34,7 +34,7 @@ const checkBuild = () => {
 const build = () => {
   return new Promise(resolve => {
     const webpack = require('webpack');
-    const webpackConfig = require(path.resolve(process.cwd(), 'webpack.config.js'));
+    const webpackConfig = require(path.resolve(process.cwd(), 'webpack.config.js'))();
     const compiler = webpack(webpackConfig);
     
     compiler.watch({aggregateTimeout: 0}, (err, stats) => {

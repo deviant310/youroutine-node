@@ -1,11 +1,11 @@
 {
-  "name": "planner-x",
+  "name": "planner",
   "version": "1.0.0",
   "description": "",
   "private": true,
   "scripts": {
     "start": "node .",
-    "build": "NODE_ENV=production webpack && git add .",
+    "build": "./node_modules/.bin/webpack --env.production && git add .",
     "update": "ncu -u -t greatest \"/^@jfxteam.*$/\" && npm i"
   },
   "pre-commit": [
@@ -13,14 +13,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jfxteam/planner-x.git"
+    "url": "ssh://git@gitlab.jsway.ru:2022/jsway/planner.git"
   },
   "author": "Anton Lebedev <dunloop8@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jfxteam/planner-x/issues"
+    "url": "https://gitlab.jsway.ru/jsway/planner/issues"
   },
-  "homepage": "https://github.com/jfxteam/planner-x#readme",
+  "homepage": "https://gitlab.jsway.ru/jsway/planner/",
   "dependencies": {
     "dotenv": "^8.2.0",
     "dotenv-parse-variables": "^1.0.1",
