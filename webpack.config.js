@@ -1,9 +1,11 @@
 const Path = require('path');
-const { readdirSync, existsSync, rmSync, lstatSync } = require('fs');
+const { readdirSync, rmSync, lstatSync } = require('fs');
 
 const NodeExternals = require('webpack-node-externals');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
+const { dependencies } = require('./package.json');
 
 const entryPath = Path.resolve(process.cwd(), 'src');
 const outputPath = Path.resolve(process.cwd(), 'build');
@@ -20,11 +22,19 @@ const getAliases = sourcePath => {
   }, {});
 }
 
-existsSync(outputPath) && rmSync(outputPath, { recursive: true });
+const getDependenciesExternals = dependencies => {
+  return Object.keys(dependencies).reduce((obj, key) => {
+    obj[key] = key;
+    return obj;
+  }, {})
+}
+
+rmSync(outputPath, { recursive: true, force: true });
 
 module.exports = (env = {}) => {
   const { production } = env;
   const mode = production ? 'production' : 'development';
+  
   
   const frontendConfig = {
     entry: {
@@ -43,6 +53,7 @@ module.exports = (env = {}) => {
       rules: [
         {
           test: /\.tsx?$/,
+          exclude: /node_modules/,
           use: [
             {
               loader: 'babel-loader',

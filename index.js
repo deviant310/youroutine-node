@@ -6,25 +6,13 @@ const { existsSync } = require('fs');
 
 const dotenvParse = require('dotenv-parse-variables');
 
-const isDevelopment = process.env.NODE_ENV !== 'production';
+const isProduction = process.env.NODE_ENV === 'production';
 
 const { APP_DEV_INSPECT, APP_DEV_INSPECT_BRK } = dotenvParse(process.env);
 
 const envPath = path.resolve(process.cwd(), '.env');
 const buildPath = path.resolve(process.cwd(), 'build');
 const serverPath = path.resolve(process.cwd(), 'app.js');
-
-const checkEnv = () => {
-  if (!existsSync(envPath))
-    console.error('\x1b[31m%s\x1b[0m', '".env" file not found! Make it from ".env.example"!') || process.exit();
-  
-  const requiredEnvVariables = ['APP_PORT'];
-  
-  for(let key of requiredEnvVariables){
-    if(typeof(process.env[key]) === 'undefined')
-      console.error('\x1b[31m%s\x1b[0m', `Missing environment key "${key}"!`) || process.exit();
-  }
-}
 
 const checkBuild = () => {
   if (!existsSync(buildPath))
@@ -46,38 +34,33 @@ const build = () => {
         modules: false
       }));
       
-      resolve(this);
+      resolve();
     });
   });
 }
 
 const watch = () => {
+  const nodemon = require('nodemon');
   const options = {
     inspect: APP_DEV_INSPECT,
     breakOnStart: APP_DEV_INSPECT_BRK
   }
   
-  spawn('./node_modules/.bin/nodemon', [
+  nodemon([
     options.inspect && `--inspect${options.breakOnStart ? '-brk' : ''}=0.0.0.0`,
     serverPath,
     `--watch`,
-    serverPath,
-    `--watch`,
     buildPath,
-  ], {
-    stdio: 'inherit',
-  });
+  ].join(' '));
 }
 
 const serve = () => {
   spawn('node', [serverPath], {stdio: 'inherit'});
 }
 
-checkEnv();
-
-if(isDevelopment){
-  build().then(() => watch());
-} else {
+if(isProduction){
   checkBuild();
   serve();
+} else {
+  build().then(watch);
 }

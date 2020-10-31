@@ -1,5 +1,10 @@
 import express, { Express, Request, Response } from "express";
-import { ControllerConstructor, Controller, ControllersImports, ControllerRequestParams } from "types/middleware";
+import {
+  ControllerConstructor,
+  Controller,
+  ControllersImports,
+  ControllerRequestParams
+} from "types/middleware";
 
 const controllers: ControllersImports = {
   notes: require('controllers/notes').default,
