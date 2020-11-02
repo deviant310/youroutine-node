@@ -5,8 +5,6 @@ const NodeExternals = require('webpack-node-externals');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-const { dependencies } = require('./package.json');
-
 const entryPath = Path.resolve(process.cwd(), 'src');
 const outputPath = Path.resolve(process.cwd(), 'build');
 
@@ -22,12 +20,11 @@ const getAliases = sourcePath => {
   }, {});
 }
 
-//rmSync(outputPath, { recursive: true, force: true });
-
 module.exports = (env = {}) => {
+  rmSync(outputPath, { recursive: true, force: true });
+  
   const { production } = env;
   const mode = production ? 'production' : 'development';
-  
   
   const frontendConfig = {
     entry: {
