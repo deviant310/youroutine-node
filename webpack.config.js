@@ -1,5 +1,5 @@
 const Path = require('path');
-const { readdirSync, rmSync, lstatSync } = require('fs');
+const { readdirSync, lstatSync } = require('fs');
 
 const NodeExternals = require('webpack-node-externals');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -21,8 +21,6 @@ const getAliases = sourcePath => {
 }
 
 module.exports = (env = {}) => {
-  rmSync(outputPath, { recursive: true, force: true });
-  
   const { production } = env;
   const mode = production ? 'production' : 'development';
   
