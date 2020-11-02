@@ -22,14 +22,7 @@ const getAliases = sourcePath => {
   }, {});
 }
 
-const getDependenciesExternals = dependencies => {
-  return Object.keys(dependencies).reduce((obj, key) => {
-    obj[key] = key;
-    return obj;
-  }, {})
-}
-
-rmSync(outputPath, { recursive: true, force: true });
+//rmSync(outputPath, { recursive: true, force: true });
 
 module.exports = (env = {}) => {
   const { production } = env;
