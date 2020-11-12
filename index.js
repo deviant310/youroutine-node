@@ -48,8 +48,6 @@ const watch = () => {
     nodemonOptions.inspect && `--inspect${nodemonOptions.breakOnStart ? '-brk' : ''}=0.0.0.0`,
     serverPath,
     `--watch`,
-    serverPath,
-    `--watch`,
     buildPath,
   ], {stdio: 'inherit'});
 }
