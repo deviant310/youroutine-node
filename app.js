@@ -26,6 +26,7 @@ app.get('*', (req, res) => {
   res.sendFile(Path.resolve(publicPath, 'index.html'))
 });
 
-app.listen(APP_PORT || 3000, APP_HOST || 'localhost', () => {
-  console.log(`App is running on http://${APP_HOST}:${APP_PORT}\n`);
+const listener = app.listen(APP_PORT || 3000, APP_HOST || 'localhost', () => {
+  let { address, port } = listener.address();
+  console.log(`App is running on http://${address}:${port}\n`);
 });

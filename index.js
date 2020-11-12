@@ -10,7 +10,6 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 const { APP_DEV_INSPECT, APP_DEV_INSPECT_BRK } = dotenvParse(process.env);
 
-const envPath = path.resolve(process.cwd(), '.env');
 const buildPath = path.resolve(process.cwd(), 'build');
 const serverPath = path.resolve(process.cwd(), 'app.js');
 
@@ -40,18 +39,20 @@ const build = () => {
 }
 
 const watch = () => {
-  const nodemon = require('nodemon');
   const options = {
     inspect: APP_DEV_INSPECT,
     breakOnStart: APP_DEV_INSPECT_BRK
   }
-  
-  nodemon([
+
+  spawn('./node_modules/.bin/nodemon', [
     options.inspect && `--inspect${options.breakOnStart ? '-brk' : ''}=0.0.0.0`,
     serverPath,
     `--watch`,
     buildPath,
-  ].join(' '));
+  ], {
+    stdio: 'inherit',
+  });
+
 }
 
 const serve = () => {
