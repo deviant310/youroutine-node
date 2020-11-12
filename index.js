@@ -39,23 +39,19 @@ const build = () => {
 }
 
 const watch = () => {
-  const nodemon = require('nodemon');
   const nodemonOptions = {
     inspect: APP_DEV_INSPECT,
     breakOnStart: APP_DEV_INSPECT_BRK
   }
 
-  const nodemonCommand = [
+  spawn('./node_modules/.bin/nodemon', [
     nodemonOptions.inspect && `--inspect${nodemonOptions.breakOnStart ? '-brk' : ''}=0.0.0.0`,
     serverPath,
     `--watch`,
+    serverPath,
+    `--watch`,
     buildPath,
-  ].join(' ');
-
-  nodemon(nodemonCommand)
-    .on('quit', () => {
-      process.exit();
-    });
+  ], {stdio: 'inherit'});
 }
 
 const serve = () => {
