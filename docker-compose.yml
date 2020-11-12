@@ -1,7 +1,7 @@
 version: "3.7"
 
 services:
-  node:
+  web:
     build:
       context: ./
       dockerfile: ./docker/node.dockerfile
@@ -12,6 +12,9 @@ services:
         NPM_REGISTRY: https://npm.pkg.github.com
         NPM_SCOPE: "@jfxteam"
     command: "npm run start"
+    working_dir: /var/www/html
+    volumes:
+      - ./src:/var/www/html/src
     ports:
       - "$APP_HOST:$APP_PORT:80"
       - "9229:9229"
@@ -21,3 +24,23 @@ services:
       APP_PORT: 80
       APP_DEV_INSPECT: $APP_DEV_INSPECT
       APP_DEV_INSPECT_BRK: $APP_DEV_INSPECT_BRK
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: $DB_NAME
+      DB_USER: $DB_USER
+      DB_PASSWORD: $DB_PASSWORD
+    depends_on:
+      - db
+  db:
+    image: postgres
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+    ports:
+      - "$DB_HOST:$DB_PORT:5432"
+    environment:
+      POSTGRES_DB: $DB_NAME
+      POSTGRES_USER: $DB_USER
+      POSTGRES_PASSWORD: $DB_PASSWORD
+
+volumes:
+  postgresql-data:
