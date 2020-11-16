@@ -6,6 +6,10 @@ import {
   ControllerRequestParams
 } from "types/middleware";
 
+
+const a = require.context('controllers', false, /\.ts$/).keys();
+debugger;
+
 const controllers: ControllersImports = {
   notes: require('controllers/notes').default,
   notes_categories: require('controllers/notes.categories').default,

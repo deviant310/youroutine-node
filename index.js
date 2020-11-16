@@ -1,7 +1,7 @@
 require('dotenv').config()
 
 const path = require('path');
-const { spawn } = require('child_process');
+const { exec } = require('child_process');
 const { existsSync } = require('fs');
 
 const dotenvParse = require('dotenv-parse-variables');
@@ -44,16 +44,20 @@ const watch = () => {
     breakOnStart: APP_DEV_INSPECT_BRK
   }
 
-  spawn('./node_modules/.bin/nodemon', [
+  const child = exec([
+    './node_modules/.bin/nodemon',
     nodemonOptions.inspect && `--inspect${nodemonOptions.breakOnStart ? '-brk' : ''}=0.0.0.0`,
     serverPath,
     `--watch`,
     buildPath,
-  ], {stdio: 'inherit'});
+  ].filter(Boolean).join(' '));
+  
+  child.stdout.pipe(process.stdout);
+
 }
 
 const serve = () => {
-  spawn('node', [serverPath], {stdio: 'inherit'});
+  exec(['node', serverPath].join(' '));
 }
 
 if(isProduction){
