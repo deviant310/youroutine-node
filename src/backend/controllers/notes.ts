@@ -26,7 +26,7 @@ class Notes implements Controller {
   
   get(request: RequestItem) : Item {
     let { id } = request;
-    return list.find(item => item.id === id);
+    return list.find(item => item.id === id) || {id: 0, title: '', description: ''};
   }
 }
 

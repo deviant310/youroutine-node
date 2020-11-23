@@ -2,28 +2,25 @@ import express, { Express, Request, Response } from "express";
 import {
   ControllerConstructor,
   Controller,
-  ControllersImports,
-  ControllerRequestParams
+  ControllersContext,
+  ControllerRequest
 } from "types/middleware";
 
+const controllers: ControllersContext = require.context('controllers', false, /\.ts$/);
+const keys = controllers.keys();
 
-const a = require.context('controllers', false, /\.ts$/).keys();
-debugger;
-
-const controllers: ControllersImports = {
-  notes: require('controllers/notes').default,
-  notes_categories: require('controllers/notes.categories').default,
-}
+type ControllersImports = typeof keys;
+type ControllerRequestParams = ControllerRequest<ControllersImports>;
 
 const middleware = (app: Express) => {
   app.post('/api/:controller/:action', express.json(), (request: Request<ControllerRequestParams>, response: Response) => {
-    const params: ControllerRequestParams = request.params,
-      { controller: controllerName, action: actionName } = params,
-      { body } = request,
-      Controller: ControllerConstructor = controllers[controllerName],
-      controller: Controller = new Controller,
-      action = controller[actionName],
-      message = action(body);
+    const params: ControllerRequestParams = request.params;
+    const { controller: controllerName, action: actionName } = params;
+    const { body } = request;
+    const Controller: ControllerConstructor = controllers(`./${controllerName}.ts`).default;
+    const controller: Controller = new Controller;
+    const action = controller[actionName];
+    const message = action(body);
     
     response.send(message);
   });
