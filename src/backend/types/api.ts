@@ -1,6 +1,6 @@
 import { Controller } from "types/controller";
 
-namespace Middleware {
+namespace API {
   export type ControllerRequestParams = {
     controller: string;
     action: keyof Controller;
@@ -9,4 +9,4 @@ namespace Middleware {
   export type ControllersContext = __WebpackModuleApi.RequireContext
 }
 
-export = Middleware;
+export = API;

@@ -32,7 +32,6 @@ class PostgreSQL implements DBConnection {
   }
   
   private get client() : Client {
-    debugger;
     if(!PostgreSQL.client)
       PostgreSQL.client = new Client({
         user: dbUser,

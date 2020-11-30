@@ -4,6 +4,7 @@ const { readdirSync, lstatSync } = require('fs');
 const NodeExternals = require('webpack-node-externals');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { DefinePlugin } = require('webpack');
 
 const entryPath = Path.resolve(process.cwd(), 'src');
 const outputPath = Path.resolve(process.cwd(), 'build');
@@ -11,11 +12,15 @@ const outputPath = Path.resolve(process.cwd(), 'build');
 const frontendEntryPath = Path.resolve(entryPath, 'frontend');
 const backendEntryPath = Path.resolve(entryPath, 'backend');
 
-const getAliases = sourcePath => {
+const getAliases = (sourcePath, fsResolve = false) => {
   return readdirSync(sourcePath).reduce((obj, dirent) => {
     let path = Path.resolve(sourcePath, dirent);
-    if(lstatSync(path).isDirectory())
-      obj[dirent] = path;
+    if(lstatSync(path).isDirectory()){
+      if(fsResolve)
+        obj[[dirent.toUpperCase(), 'PATH'].join('_')] = `'${path}'`;
+      else
+        obj[dirent] = path;
+    }
     return obj;
   }, {});
 }
@@ -126,7 +131,10 @@ module.exports = (env = {}) => {
           ]
         }
       ]
-    }
+    },
+    plugins: [
+      new DefinePlugin(getAliases(backendEntryPath, true))
+    ]
   }
   
   return [frontendConfig, backendConfig];
