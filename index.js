@@ -11,7 +11,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 const { APP_DEV_INSPECT, APP_DEV_INSPECT_BRK } = dotenvParse(process.env);
 
 const buildPath = path.resolve(process.cwd(), 'build');
-const serverPath = path.resolve(process.cwd(), 'app.js');
+const entryPath = path.resolve(process.cwd(), 'app.js');
 
 const checkBuild = () => {
   if (!existsSync(buildPath))
@@ -47,7 +47,7 @@ const watch = () => {
   const child = exec([
     './node_modules/.bin/nodemon',
     nodemonOptions.inspect && `--inspect${nodemonOptions.breakOnStart ? '-brk' : ''}=0.0.0.0`,
-    serverPath,
+    entryPath,
     `--watch`,
     buildPath,
   ].filter(Boolean).join(' '));
@@ -57,7 +57,7 @@ const watch = () => {
 }
 
 const serve = () => {
-  exec(['node', serverPath].join(' '));
+  exec(['node', entryPath].join(' '));
 }
 
 if(isProduction){

@@ -1,15 +1,8 @@
+import { Controller } from "types/controller";
+
 namespace Middleware {
-  export type ControllerConstructor = {
-    new() : Controller;
-  }
-  
-  export type Controller = {
-    list(data: any): Array<object>
-    get(data: any): object
-  }
-  
-  export type ControllerRequest<ContextKeys> = {
-    controller: ContextKeys[keyof ContextKeys];
+  export type ControllerRequestParams = {
+    controller: string;
     action: keyof Controller;
   }
   

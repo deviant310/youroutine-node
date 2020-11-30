@@ -1,5 +1,14 @@
-import { List, Item, RequestItem } from 'types/notes';
-import { Controller } from 'types/middleware';
+import { Controller } from 'types/controller';
+import {
+  EntityList as NotesList,
+  EntityItem,
+  EntityItemRequestParams as NotesItemRequestParams
+} from 'types/entity';
+
+interface NotesItem extends EntityItem {
+  title: string
+  description: string
+}
 
 const list = [
   {
@@ -20,11 +29,11 @@ const list = [
 ];
 
 class Notes implements Controller {
-  list() : List {
+  list() : NotesList {
     return list
   }
   
-  get(request: RequestItem) : Item {
+  get(request: NotesItemRequestParams) : NotesItem {
     let { id } = request;
     return list.find(item => item.id === id) || {id: 0, title: '', description: ''};
   }
