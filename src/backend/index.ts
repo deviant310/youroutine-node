@@ -10,7 +10,7 @@ import { ControllerConstructor, Controller, ControllerMethod } from "types/contr
 const controllers: ControllersContext = require.context('controllers', false, /\.ts$/);
 const migrations = require.context('migrations', false, /\.ts$/);
 
-const migrate = async() => {
+const migrate = async () => {
   const dataFilePath = resolve(STORAGE_PATH, 'migrations.json');
   const existedData: { [key: string]: any } = existsSync(dataFilePath) ? JSON.parse(readFileSync(dataFilePath).toString()) : {};
   

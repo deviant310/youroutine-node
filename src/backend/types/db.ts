@@ -7,7 +7,7 @@ namespace DB {
   }
   
   export type DBConnection = {
-    init(): void
+    init(): Promise<DBConnection>
     query(queryString: string): void;
   }
 }

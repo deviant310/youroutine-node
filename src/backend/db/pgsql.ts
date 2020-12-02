@@ -22,9 +22,10 @@ class PostgreSQL implements DBConnection {
   private static client: Client;
   
   async init(){
-    //await waitPort({ host: dbHost, port: dbPort, timeout: 15000 });
-    
+    await waitPort({ host: dbHost, port: dbPort, timeout: 15000 });
     await this.client.connect();
+    
+    return this;
   }
   
   async query(queryText: string){

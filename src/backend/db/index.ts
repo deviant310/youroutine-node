@@ -10,11 +10,9 @@ const {
 
 const dbDrivers = require.context('db', false, /(?<!index)\.ts$/);
 
-const DB = async () => {
+const dbDefiner = () => {
   const DBClass: DBConstructor = dbDrivers(`./${dbDriver}.ts`).default;
-  const dbInstance = new DBClass;
-  await dbInstance.init();
-  return dbInstance;
+  return (new DBClass).init();
 }
 
-export default DB;
+export default dbDefiner;

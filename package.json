@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node .",
     "build": "./node_modules/.bin/webpack --env.production && git add .",
-    "update": "ncu -u -t greatest \"/^@jfxteam.*$/\" && npm i"
+    "update": "ncu -u -t greatest \"/^@jfxteam.*$/\" && npm i",
+    "command": "echo hello"
   },
   "pre-commit": [
     "build"
