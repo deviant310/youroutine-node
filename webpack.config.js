@@ -1,4 +1,4 @@
-const Path = require('path');
+const { resolve } = require('path');
 const { readdirSync, lstatSync } = require('fs');
 
 const NodeExternals = require('webpack-node-externals');
@@ -6,28 +6,36 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { DefinePlugin } = require('webpack');
 
-const entryPath = Path.resolve(process.cwd(), 'src');
-const outputPath = Path.resolve(process.cwd(), 'build');
+const entryPath = resolve(process.cwd(), 'src');
+const outputPath = resolve(process.cwd(), 'build');
+const storagePath = resolve(process.cwd(), 'storage');
 
-const frontendEntryPath = Path.resolve(entryPath, 'frontend');
-const backendEntryPath = Path.resolve(entryPath, 'backend');
+const frontendEntryPath = resolve(entryPath, 'frontend');
+const backendEntryPath = resolve(entryPath, 'backend');
 
-const getAliases = (sourcePath, fsResolve = false) => {
-  return readdirSync(sourcePath).reduce((obj, dirent) => {
-    let path = Path.resolve(sourcePath, dirent);
-    if(lstatSync(path).isDirectory()){
-      if(fsResolve)
-        obj[[dirent.toUpperCase(), 'PATH'].join('_')] = `'${path}'`;
-      else
-        obj[dirent] = path;
-    }
+const parseDirAliases = path => {
+  return readdirSync(path).reduce((obj, dirent) => {
+    let direntPath = resolve(path, dirent);
+    if(lstatSync(direntPath).isDirectory())
+      obj[dirent] = direntPath;
     return obj;
   }, {});
-}
+};
+
+const buildGlobalsFromAliases = aliases => {
+  return Object.entries(aliases).reduce((obj, [key, value]) => {
+    obj[`${key.toUpperCase()}_PATH`] = `'${value}'`;
+    return obj;
+  }, {});
+};
 
 module.exports = (env = {}) => {
   const { production } = env;
   const mode = production ? 'production' : 'development';
+  const [
+    frontendAliases,
+    backendAliases
+  ] = [frontendEntryPath, backendEntryPath].map(parseDirAliases);
   
   const frontendConfig = {
     entry: {
@@ -35,12 +43,12 @@ module.exports = (env = {}) => {
     },
     mode,
     output: {
-      path: Path.resolve(outputPath, 'public'),
+      path: resolve(outputPath, 'public'),
       publicPath: '/'
     },
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.jsx'],
-      alias: getAliases(frontendEntryPath)
+      alias: frontendAliases
     },
     module: {
       rules: [
@@ -96,7 +104,7 @@ module.exports = (env = {}) => {
     },
     plugins: [
       new HtmlWebpackPlugin({
-        template: Path.resolve(frontendEntryPath, 'index.ejs')
+        template: resolve(frontendEntryPath, 'index.ejs')
       }),
       new MiniCssExtractPlugin({
         filename: 'style.css'
@@ -118,7 +126,7 @@ module.exports = (env = {}) => {
     },
     resolve: {
       extensions: [ '.ts', '.js'],
-      alias: getAliases(backendEntryPath)
+      alias: backendAliases
     },
     module: {
       rules: [
@@ -133,9 +141,14 @@ module.exports = (env = {}) => {
       ]
     },
     plugins: [
-      new DefinePlugin(getAliases(backendEntryPath, true))
+      new DefinePlugin(buildGlobalsFromAliases({
+        ...backendAliases,
+        ...{
+          storage: storagePath
+        }
+      }))
     ]
   }
   
   return [frontendConfig, backendConfig];
-}
+};

@@ -7,7 +7,7 @@ class CreateNotesTable {
     return db.query(`
       create table notes (
         id bigserial not null constraint notes_pkey primary key,
-        name varchar(255) not null,
+        title varchar(255) not null,
         description text
       );
     `);

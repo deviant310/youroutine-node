@@ -4,7 +4,6 @@ services:
   web:
     build:
       context: ./
-      dockerfile: ./docker/node.dockerfile
       args:
         NPM_USER: dunloop
         NPM_TOKEN: 9ba96cfa9db6def87a11cfd2f048a7629154baf9

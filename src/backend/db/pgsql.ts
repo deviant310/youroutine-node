@@ -19,29 +19,31 @@ const {
 } = dotenvParse(process.env as Parsed);
 
 class PostgreSQL implements DBConnection {
-  private static client: Client;
+  private static _client: Client;
+  
+  get connection(){
+    return PostgreSQL._client;
+  }
   
   async init(){
-    await waitPort({ host: dbHost, port: dbPort, timeout: 15000 });
-    await this.client.connect();
-    
-    return this;
-  }
-  
-  async query(queryText: string){
-    return await this.client.query(queryText);
-  }
-  
-  private get client() : Client {
-    if(!PostgreSQL.client)
-      PostgreSQL.client = new Client({
+    if(!PostgreSQL._client) {
+      await waitPort({ host: dbHost, port: dbPort, timeout: 15000 });
+      const client = new Client({
         user: dbUser,
         host: dbHost,
         database: dbName,
         password: dbPassword,
         port: dbPort,
       });
-    return PostgreSQL.client;
+      await client.connect();
+      PostgreSQL._client = client;
+    }
+    
+    return this;
+  }
+  
+  async query(queryText: string){
+    return this.connection.query(queryText);
   }
 }
 

@@ -1,5 +1,4 @@
-import {Client as PostgresClient, ClientConfig} from "pg";
-import {Controller} from "./controller";
+import { Client as PostgreSQLClient } from "pg";
 
 namespace DB {
   export type DBConstructor = {
@@ -7,7 +6,8 @@ namespace DB {
   }
   
   export type DBConnection = {
-    init(): Promise<DBConnection>
+    connection: PostgreSQLClient;
+    init(): Promise<DBConnection>;
     query(queryString: string): void;
   }
 }
