@@ -49,11 +49,10 @@ const applyRoutes = (app: Express) => {
   app.post('/api/:controller/:action', express.json(), (request: Request<ControllerRequestParams>, response: Response) => {
     const params: ControllerRequestParams = request.params;
     const { controller: controllerName, action: actionName } = params;
-    const { body } = request;
     const Controller: ControllerConstructor = controllers(`./${controllerName}.ts`).default;
     const controller: Controller = new Controller;
-    const action: ControllerMethod = controller[ actionName ];
-    const message = action(body);
+    const controllerAction: ControllerMethod = controller[ actionName ];
+    const message = controllerAction(request.body);
     
     response.send(message);
   });
