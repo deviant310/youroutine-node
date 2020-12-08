@@ -1,41 +1,45 @@
-const Path = require('path');
-const Express = require('express');
-const Minimist = require('minimist');
+require('dotenv').config();
+
+const { resolve } = require('path');
+const express = require('express');
+const minimist = require('minimist');
+const chalk = require('chalk');
 const dotenvParse = require('dotenv-parse-variables');
 
 const headers = {
   "Access-Control-Allow-Origin": "*"
 }
 
-const { COMMAND, APP_HOST, APP_PORT } = {
+const { IS_TERM, APP_HOST, APP_PORT } = {
   ...{
-    COMMAND: false,
+    IS_TERM: false,
     APP_PORT: 3000,
     APP_HOST: 'localhost'
   },
   ...dotenvParse(process.env)
 };
 
-const rootPath = Path.resolve(process.cwd(), 'build');
-const publicPath = Path.resolve(rootPath, 'public');
+const rootPath = resolve(process.cwd(), 'build');
+const publicPath = resolve(rootPath, 'public');
 
-const app = Express();
+const app = express();
 const { bootstrap, runCommand } = require(rootPath);
 
 (async () => {
-  if(COMMAND){
-    const { _: commands, ...options } = Minimist(process.argv.slice(2));
+  if(IS_TERM){
+    const { _: commands, ...options } = minimist(process.argv.slice(2));
     const [ command ] = commands;
-    await runCommand(command, options);
+    const code = await runCommand(command, options);
+    process.exit(code);
   } else {
-    app.use(Express.static(publicPath, {
+    app.use(express.static(publicPath, {
       setHeaders: res => res.set(headers)
     }));
   
     await bootstrap(app);
   
     app.get('*', (req, res) => {
-      res.sendFile(Path.resolve(publicPath, 'index.html'))
+      res.sendFile(resolve(publicPath, 'index.html'))
     });
   
     const listener = app.listen(APP_PORT, APP_HOST, () => {

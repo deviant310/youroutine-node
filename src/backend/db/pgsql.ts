@@ -1,6 +1,7 @@
 import { Client } from 'pg';
 import dotenvParse, { Parsed } from 'dotenv-parse-variables';
 import waitPort from 'wait-port';
+import isReachable from 'is-reachable';
 
 import { DBConnection } from 'types/db';
 
@@ -27,7 +28,9 @@ class PostgreSQL implements DBConnection {
   
   async init(){
     if(!PostgreSQL._client) {
-      await waitPort({ host: dbHost, port: dbPort, timeout: 15000 });
+      const dbIsReachable = await isReachable(`${dbHost}:${dbPort}`);
+      if(!dbIsReachable)
+        await waitPort({ host: dbHost, port: dbPort, timeout: 15000 });
       const client = new Client({
         user: dbUser,
         host: dbHost,
@@ -42,8 +45,8 @@ class PostgreSQL implements DBConnection {
     return this;
   }
   
-  async query(queryText: string){
-    return this.connection.query(queryText);
+  async query(queryText: string, values?: any[]){
+    return this.connection.query(queryText, values);
   }
 }
 

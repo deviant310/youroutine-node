@@ -121,8 +121,7 @@ module.exports = (env = {}) => {
     mode,
     output: {
       path: outputPath,
-      libraryTarget: "commonjs2",
-      libraryExport: 'default'
+      libraryTarget: "commonjs2"
     },
     resolve: {
       extensions: [ '.ts', '.js'],

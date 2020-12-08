@@ -13,9 +13,8 @@ import App from './app';
 const Reducers = require.context('reducers', false, /\.ts$/);
 
 const store = createStore(combineReducers({
-  notes: Reducers('./notes.ts').default
+  notes: Reducers('./list.ts').default
 }));
-
 
 ReactDOM.render((
   <Provider store={store}>

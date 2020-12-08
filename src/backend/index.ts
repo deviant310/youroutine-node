@@ -2,13 +2,14 @@ import { resolve, parse } from "path";
 import { statSync, existsSync, readFileSync, writeFileSync } from "fs";
 import express, { Express, Request, Response } from "express";
 
-import { ControllersContext, ControllerRequestParams } from "types/api";
-import { ControllerConstructor, Controller, ControllerMethod } from "types/controller";
+import { ControllerRequestParams } from "types/api";
 
 declare const STORAGE_PATH: string;
 declare const MIGRATIONS_PATH: string;
 
-const [ controllers, migrations, commands ] = [ 'controllers', 'migrations', 'commands' ].map(path => require.context(path, false, /\.ts$/));
+const controllers = require.context('controllers', false, /\.ts$/);
+const migrations = require.context('migrations', false, /\.ts$/);
+const commands = require.context('commands', false, /\.ts$/);
 
 const migrate = async () => {
   const dataFilePath = resolve(STORAGE_PATH, 'migrations.json');
@@ -45,20 +46,19 @@ const migrate = async () => {
 }
 
 const applyRoutes = (app: Express) => {
-  app.post('/api/:controller/:action', express.json(), (request: Request<ControllerRequestParams>, response: Response) => {
+  app.post('/api/:controller/:action', express.json(), async (request: Request<ControllerRequestParams>, response: Response) => {
     const params: ControllerRequestParams = request.params;
     const { controller: controllerName, action: actionName } = params;
-    const Controller: ControllerConstructor = controllers(`./${controllerName}.ts`).default;
-    const controller: Controller = new Controller;
-    const controllerAction: ControllerMethod = controller[ actionName ];
-    const message = controllerAction(request.body);
+    const Controller = controllers(`./${controllerName}.ts`).default;
+    const controller = new Controller;
+    const controllerAction = controller[ actionName ];
+    const message = await controllerAction(request.body);
     
     response.send(message);
   });
 }
 
 export const runCommand = async (command: string, options: object) => {
-  commands(``)
   const CommandClass = commands(`./${command}.ts`).default;
   return (new CommandClass).run(options);
 }

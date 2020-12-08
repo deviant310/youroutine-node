@@ -13,6 +13,8 @@ class Seed implements Command {
         ('Заметка 2', 'Duis finibus lectus at mauris malesuada, nec blandit neque aliquam. Quisque urna dui, eleifend eget nisi vel, aliquam rhoncus odio. Integer tempor, dui eu molestie aliquam, eros nulla pharetra leo, quis consectetur orci orci id mi. Donec id nulla mi.'),
         ('Заметка 3', 'Quisque urna dui, eleifend eget nisi vel, aliquam rhoncus odio. Integer tempor, dui eu molestie aliquam, eros nulla pharetra leo, quis consectetur orci orci id mi. Donec id nulla mi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent sed urna vel nulla varius congue. Nunc tempor efficitur egestas. Fusce sapien purus, porta pellentesque luctus non, facilisis nec ante. Nunc laoreet magna vel tempor elementum. Duis finibus lectus at mauris malesuada, nec blandit neque aliquam.')
     `);
+    
+    return 0;
   }
 }
 

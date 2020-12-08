@@ -1,16 +1,10 @@
-import { EntityItem, EntityList } from "types/entity";
+import { QueryResult } from "types/db";
 
 namespace Controller {
-  export type ControllerConstructor = {
-    new() : Controller;
+  export type Controller<Item, List> = {
+    list(data: any): Promise<List>
+    get(data: any): Promise<Item>
   }
-  
-  export type Controller = {
-    list(data: any): EntityList
-    get(data: any): EntityItem
-  }
-  
-  export type ControllerMethod = Controller[keyof Controller];
 }
 
 export = Controller;
