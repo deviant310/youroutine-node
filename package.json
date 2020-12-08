@@ -4,10 +4,11 @@
   "description": "",
   "private": true,
   "scripts": {
-    "start": "node .",
+    "start": "pm2 start .",
+    "stop": "pm2 stop .",
     "build": "./node_modules/.bin/webpack --env.production && git add .",
     "update": "ncu -u -t greatest \"/^@jfxteam.*$/\" && npm i",
-    "command": "echo hello"
+    "command": "COMMAND=true node app.js"
   },
   "pre-commit": [
     "build"
@@ -23,9 +24,11 @@
   },
   "homepage": "https://gitlab.jsway.ru/jsway/planner/",
   "dependencies": {
+    "chalk": "^4.1.0",
     "dotenv": "^8.2.0",
     "dotenv-parse-variables": "^1.0.1",
     "express": "^4.17.1",
+    "minimist": "^1.2.5",
     "pg": "^8.5.1",
     "wait-port": "^0.2.9"
   },
@@ -53,6 +56,7 @@
     "mini-css-extract-plugin": "^0.11.3",
     "nodemon": "^2.0.5",
     "npm-check-updates": "^9.1.0",
+    "pm2": "^4.5.0",
     "pre-commit": "^1.2.2",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",

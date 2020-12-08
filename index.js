@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config();
 
 const path = require('path');
 const { exec } = require('child_process');
@@ -39,25 +39,25 @@ const build = () => {
 }
 
 const watch = () => {
-  const nodemonOptions = {
+  const options = {
     inspect: APP_DEV_INSPECT,
     breakOnStart: APP_DEV_INSPECT_BRK
   }
 
-  const child = exec([
+  const nodemon = exec([
     './node_modules/.bin/nodemon',
-    nodemonOptions.inspect && `--inspect${nodemonOptions.breakOnStart ? '-brk' : ''}=0.0.0.0`,
+    options.inspect && `--inspect${options.breakOnStart ? '-brk' : ''}=0.0.0.0`,
     entryPath,
     `--watch`,
-    buildPath,
+    buildPath
   ].filter(Boolean).join(' '));
   
-  child.stdout.pipe(process.stdout);
-
+  nodemon.stdout.pipe(process.stdout);
 }
 
 const serve = () => {
-  exec(['node', entryPath].join(' '));
+  const node = exec([ 'node', entryPath ].join(' '));
+  node.stdout.pipe(process.stdout);
 }
 
 if(isProduction){

@@ -8,8 +8,7 @@ import { ControllerConstructor, Controller, ControllerMethod } from "types/contr
 declare const STORAGE_PATH: string;
 declare const MIGRATIONS_PATH: string;
 
-const controllers: ControllersContext = require.context('controllers', false, /\.ts$/);
-const migrations = require.context('migrations', false, /\.ts$/);
+const [ controllers, migrations, commands ] = [ 'controllers', 'migrations', 'commands' ].map(path => require.context(path, false, /\.ts$/));
 
 const migrate = async () => {
   const dataFilePath = resolve(STORAGE_PATH, 'migrations.json');
@@ -58,9 +57,13 @@ const applyRoutes = (app: Express) => {
   });
 }
 
-const bootstrap = async (app: Express) => {
+export const runCommand = async (command: string, options: object) => {
+  commands(``)
+  const CommandClass = commands(`./${command}.ts`).default;
+  return (new CommandClass).run(options);
+}
+
+export const bootstrap = async (app: Express) => {
   await migrate();
   applyRoutes(app);
 }
-
-export default bootstrap;

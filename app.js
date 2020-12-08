@@ -1,15 +1,15 @@
 const Path = require('path');
-
 const Express = require('express');
-
+const Minimist = require('minimist');
 const dotenvParse = require('dotenv-parse-variables');
 
 const headers = {
   "Access-Control-Allow-Origin": "*"
 }
 
-const { APP_HOST, APP_PORT } = {
+const { COMMAND, APP_HOST, APP_PORT } = {
   ...{
+    COMMAND: false,
     APP_PORT: 3000,
     APP_HOST: 'localhost'
   },
@@ -20,21 +20,27 @@ const rootPath = Path.resolve(process.cwd(), 'build');
 const publicPath = Path.resolve(rootPath, 'public');
 
 const app = Express();
-const bootstrap = require(rootPath);
+const { bootstrap, runCommand } = require(rootPath);
 
 (async () => {
-  app.use(Express.static(publicPath, {
-    setHeaders: res => res.set(headers)
-  }));
+  if(COMMAND){
+    const { _: commands, ...options } = Minimist(process.argv.slice(2));
+    const [ command ] = commands;
+    await runCommand(command, options);
+  } else {
+    app.use(Express.static(publicPath, {
+      setHeaders: res => res.set(headers)
+    }));
   
-  await bootstrap(app);
+    await bootstrap(app);
   
-  app.get('*', (req, res) => {
-    res.sendFile(Path.resolve(publicPath, 'index.html'))
-  });
+    app.get('*', (req, res) => {
+      res.sendFile(Path.resolve(publicPath, 'index.html'))
+    });
   
-  const listener = app.listen(APP_PORT, APP_HOST, () => {
-    let { address, port } = listener.address();
-    console.log(`App is running on http://${address}:${port}\n`);
-  });
+    const listener = app.listen(APP_PORT, APP_HOST, () => {
+      let { address, port } = listener.address();
+      console.log(`App is running on http://${address}:${port}\n`);
+    });
+  }
 })();
