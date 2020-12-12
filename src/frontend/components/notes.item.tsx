@@ -1,10 +1,14 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 
-import { NotesItemProperties, NotesItemRequestParams } from 'types/notes';
-import { CatalogItemRequest, CatalogItemComponent } from "types/catalog";
+import {
+  RouteComponentRequest,
+  RouteComponent
+} from "core/route.component";
 
-type Props = CatalogItemRequest<NotesItemRequestParams>;
-type State = CatalogItemComponent<NotesItemProperties>;
+import Notes, { Note, NoteRequest } from "models/notes";
+
+type Props = RouteComponentRequest<NoteRequest>;
+type State = RouteComponent<Note>;
 
 class NotesItem extends React.PureComponent<Props, State> {
   constructor(props: Readonly<Props>) {
@@ -17,21 +21,15 @@ class NotesItem extends React.PureComponent<Props, State> {
   
   async componentDidMount() {
     let id : number = this.props.id || +this.props.match.params.id,
-      data: NotesItemProperties = await fetch('/api/notes/get', {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        method: 'post',
-        body: JSON.stringify({id})
-      }).then(r => r.json());
+      data = await (new Notes).getById(id);
     this.setState({...this.state, ...{data}})
   }
   
   render() {
     if(!this.state.data)
-      return <Fragment/>
+      return '';
     
-    let { title, description }: NotesItemProperties = this.state.data;
+    const { title, description } = this.state.data;
 
     return (
       <div className="notes-item flex-grow-1 mb-3">

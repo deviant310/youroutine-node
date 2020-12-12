@@ -1,11 +1,17 @@
 import React from 'react';
 
-import NotesListItem from 'components/notes.list.item';
-import { NotesItemProperties, NotesListFilter } from 'types/notes';
-import { CatalogListRequest, CatalogListComponent } from 'types/catalog';
+import { Selectable } from "core/model";
+import {
+  RouteComponentRequest,
+  RouteComponent
+} from "core/route.component";
 
-type Props = CatalogListRequest<NotesListFilter>
-type State = CatalogListComponent<NotesItemProperties>
+import Notes, { Note } from "models/notes";
+
+import NotesListItem from 'components/notes.list.item';
+
+type Props = RouteComponentRequest<Selectable>
+type State = RouteComponent<Note[]>
 
 class NotesList extends React.PureComponent<Props, State> {
   constructor(props: Readonly<Props>) {
@@ -17,14 +23,14 @@ class NotesList extends React.PureComponent<Props, State> {
   }
   
   async componentDidMount() {
-    let data: NotesItemProperties[] = await fetch('/api/notes/list', {method: 'post'}).then(r => r.json());
+    let data = await (new Notes).list();
     this.setState({...this.state, ...{data}})
   }
   
   render(){
     return (
       <div className="notes">
-        {this.state.data.map((item: NotesItemProperties, index: number) => (
+        {this.state.data.map((item: Note, index: number) => (
           <NotesListItem data={item} key={index}/>
         ))}
       </div>

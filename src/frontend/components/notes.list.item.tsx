@@ -1,15 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import { NotesItemProperties } from 'types/notes';
-import { CatalogItemComponent } from "types/catalog";
+import { RouteComponent } from "core/route.component";
 
-type Props = CatalogItemComponent<NotesItemProperties>
+import { Note } from "models/notes";
+
+type Props = RouteComponent<Note>
 
 class NotesListItem extends React.PureComponent<Props> {
   render(){
-    let data: NotesItemProperties = this.props.data,
-      { id, title, description } = data;
+    const { id, title, description } = this.props.data;
     
     return (
       <Link to={`/notes/${id}`}>
