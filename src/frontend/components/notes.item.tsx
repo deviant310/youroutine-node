@@ -8,14 +8,14 @@ import {
 import Notes, { Note, NoteRequest } from "models/notes";
 
 type Props = RouteComponentRequest<NoteRequest>;
-type State = RouteComponent<Note>;
+type State = RouteComponent<Note | void>;
 
 class NotesItem extends React.PureComponent<Props, State> {
   constructor(props: Readonly<Props>) {
     super(props);
     
     this.state = {
-      data: null
+      data: undefined
     }
   }
   

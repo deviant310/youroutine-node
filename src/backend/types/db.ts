@@ -1,6 +1,7 @@
 import {
   Client as PostgreSQLClient,
-  QueryResult as PostgresSQLQueryResult
+  QueryResult as PostgresSQLQueryResult,
+  QueryResultRow as PostgresSQLQueryResultRow
 } from "pg";
 
 namespace DB {
@@ -8,7 +9,7 @@ namespace DB {
     new() : DBConnection;
   };
   
-  export type QueryResult<Result> = Promise<PostgresSQLQueryResult<Result>>;
+  export type QueryResult<Result> = PostgresSQLQueryResultRow | PostgresSQLQueryResult<Result>;
   
   export type DBConnection = {
     connection: PostgreSQLClient;

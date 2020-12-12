@@ -3,7 +3,6 @@ require('dotenv').config();
 const { resolve } = require('path');
 const express = require('express');
 const minimist = require('minimist');
-const chalk = require('chalk');
 const dotenvParse = require('dotenv-parse-variables');
 
 const headers = {
@@ -23,14 +22,14 @@ const rootPath = resolve(process.cwd(), 'build');
 const publicPath = resolve(rootPath, 'public');
 
 const app = express();
-const { bootstrap, runCommand } = require(rootPath);
+const { bootstrap, Console } = require(rootPath);
 
 (async () => {
   if(IS_TERM){
     const { _: commands, ...options } = minimist(process.argv.slice(2));
     const [ command ] = commands;
-    const code = await runCommand(command, options);
-    process.exit(code);
+    const exitCode = await Console.runCommand(command, options);
+    process.exit(exitCode);
   } else {
     app.use(express.static(publicPath, {
       setHeaders: res => res.set(headers)

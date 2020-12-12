@@ -1,21 +1,19 @@
 import DB from 'db';
 
-class CreateNotesTable {
-  async up(){
-    const db = await DB();
-    
-    return db.query(`
-      create table notes (
-        id bigserial not null constraint notes_pkey primary key,
-        title varchar(255) not null,
-        description text
-      );
-    `);
-  }
+async function up(){
+  const db = await DB();
   
-  down(){
-  
-  }
+  return db.query(`
+    create table notes (
+      id bigserial not null constraint notes_pkey primary key,
+      title varchar(255) not null,
+      description text
+    );
+  `);
 }
 
-export default CreateNotesTable;
+async function down(){
+
+}
+
+export { up, down };
