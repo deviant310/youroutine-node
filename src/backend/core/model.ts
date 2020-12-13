@@ -1,15 +1,16 @@
-import DB from 'db';
-import { QueryResult } from "types/db";
+import DB from "core/db";
+import { Client } from "pg";
+import { Connection } from "core/db/connection";
 
 type Selectable = {
   filters?: Array<object>;
   select?: Array<string>
 }
 
-type ModelEntity<Entity> = Promise<QueryResult<Entity>>;
+type ModelEntity<Entity> = Promise<Connection<Client, Entity>>;
 
 abstract class Model<Entity> {
-  table: string = '';
+  protected table: string = '';
   
   constructor() {
     return new Proxy(this, {

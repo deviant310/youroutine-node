@@ -1,4 +1,4 @@
-import DB from 'db';
+import DB from 'core/db';
 
 export default async function(){
   const db = await DB();

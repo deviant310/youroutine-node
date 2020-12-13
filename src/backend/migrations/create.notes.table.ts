@@ -1,4 +1,4 @@
-import DB from 'db';
+import DB from 'core/db';
 
 async function up(){
   const db = await DB();

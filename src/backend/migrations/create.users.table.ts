@@ -1,4 +1,4 @@
-import DB from 'db';
+import DB from 'core/db';
 
 class CreateUsersTable {
   async up(){

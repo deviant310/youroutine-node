@@ -1,26 +1,22 @@
-import express, { Express, Request, Response } from "express";
-import Controller from "core/controller";
+import { join, parse } from "path";
+import { Express, Request, Response } from "express";
 
-type ControllerRequestParams<Model, Action> = {
-  model: Model;
-  action: Action;
-}
+import Route from "core/route";
 
-type ControllerInstance = Controller<object[], object>;
-type ControllerRequest = ControllerRequestParams<string, keyof ControllerInstance>;
+const controllersContext = require.context('controllers', false, /\.ts$/);
 
-//const controllers = require.context('controllers', false, /\.ts$/);
-
-function applyRoutes(app: Express) {
-  app.post('/api/:model/:action', express.json(), async (request: Request<ControllerRequest>, response: Response) => {
-    const params = request.params;
-    const { model, action } = params;
-    const controller: ControllerInstance = new Controller;
-    const controllerAction = controller[ action ];
-    const message = await controllerAction(model, request.body);
+export default function(app: Express) {
+  for(let key of controllersContext.keys()){
+    const routes: Route<any, any, any>[] = controllersContext(key).default;
+    const controllerName = parse(key).name;
     
-    response.send(message);
-  });
+    for(let route of routes){
+      const { method, path, bodyParser, handler } = route;
+      
+      app[method](join(`/${controllerName}`, path), bodyParser, async (request: Request, response: Response) => {
+        const message = await handler(request);
+        response.send(message);
+      });
+    }
+  }
 }
-
-export { applyRoutes };

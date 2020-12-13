@@ -1,9 +1,9 @@
-import { Client } from 'pg';
 import dotenvParse, { Parsed } from 'dotenv-parse-variables';
+import { Client, QueryResult, QueryResultRow } from "pg";
 import waitPort from 'wait-port';
 import isReachable from 'is-reachable';
 
-import { DBConnection } from 'types/db';
+import { Connection } from 'core/db/connection';
 
 const {
   DB_HOST: dbHost = 'localhost',
@@ -19,7 +19,7 @@ const {
   DB_PASSWORD?: string;
 } = dotenvParse(process.env as Parsed);
 
-class PostgreSQL implements DBConnection {
+class PostgreSQL implements Connection<Client, QueryResult | QueryResultRow> {
   private static _client: Client;
   
   get connection(){

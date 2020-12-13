@@ -5,12 +5,12 @@ type Selectable = {
   select?: Array<string>
 }
 
-abstract class Model<Item> {
+abstract class Model<Entity> {
   endpoint: string = '';
   
   constructor() {
     return new Proxy(this, {
-      get: (instance: Model<Item>, property: keyof Model<Item>) => {
+      get: (instance: Model<Entity>, property: keyof Model<Entity>) => {
         if(!this.endpoint)
           throw new Error(`Property "endpoint" of ${this.constructor.name} is undefined! Define it in your model class!`);
         return instance[property];
@@ -18,33 +18,18 @@ abstract class Model<Item> {
     });
   }
   
-  list(selection: Selectable = {}) : Promise<Array<Item>> {
-    const endpoint = resolve(this.endpoint, 'index');
-    
-    return fetch(endpoint, {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      method: 'post',
-      body: JSON.stringify(selection)
-    })
+  list(selection: Selectable = {}) : Promise<Entity[]> {
+    return fetch(this.endpoint)
       .then(r => r.json())
   }
   
-  getById(id: number) : Promise<Item> {
-    const endpoint = resolve(this.endpoint, 'show');
+  getById(id: number) : Promise<Entity> {
+    const endpoint = resolve(this.endpoint, id.toString());
     
-    return fetch(endpoint, {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      method: 'post',
-      body: JSON.stringify({id})
-    })
+    return fetch(endpoint)
       .then(r => r.json())
   }
 }
 
 export { Selectable };
 export default Model;
-

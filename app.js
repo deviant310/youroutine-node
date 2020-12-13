@@ -9,9 +9,9 @@ const headers = {
   "Access-Control-Allow-Origin": "*"
 }
 
-const { IS_TERM, APP_HOST, APP_PORT } = {
+const { IS_COMMAND, APP_HOST, APP_PORT } = {
   ...{
-    IS_TERM: false,
+    IS_COMMAND: false,
     APP_PORT: 3000,
     APP_HOST: 'localhost'
   },
@@ -25,7 +25,7 @@ const app = express();
 const { bootstrap, Console } = require(rootPath);
 
 (async () => {
-  if(IS_TERM){
+  if(IS_COMMAND){
     const { _: commands, ...options } = minimist(process.argv.slice(2));
     const [ command ] = commands;
     const exitCode = await Console.runCommand(command, options);
