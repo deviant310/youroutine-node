@@ -7,7 +7,7 @@
     "start": "node .",
     "build": "./node_modules/.bin/webpack --env.production && git add .",
     "update": "ncu -u -t greatest \"/^@jfxteam.*$/\" && npm i",
-    "command": "IS_COMMAND=true node app.js"
+    "command": "IS_COMMAND=true node ."
   },
   "pre-commit": [
     "build"
@@ -41,6 +41,7 @@
     "@jfxteam/font-awesome": "^1.0.0",
     "@types/dotenv-parse-variables": "^0.2.0",
     "@types/express": "^4.17.8",
+    "@types/faker": "^5.1.5",
     "@types/node": "^14.11.10",
     "@types/pg": "^7.14.7",
     "@types/react": "^16.9.53",
@@ -51,6 +52,7 @@
     "babel-loader": "^8.1.0",
     "bootstrap": "^4.5.3",
     "css-loader": "^4.3.0",
+    "faker": "^5.1.0",
     "file-loader": "^6.1.1",
     "html-webpack-plugin": "^4.5.0",
     "mini-css-extract-plugin": "^0.11.3",

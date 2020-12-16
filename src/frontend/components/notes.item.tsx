@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Styles } from "core/styles";
 import {
   RouteComponentRequest,
   RouteComponent
@@ -30,10 +31,15 @@ class NotesItem extends React.PureComponent<Props, State> {
       return '';
     
     const { title, description } = this.state.data;
+    const styles: Styles = {
+      title: {
+        textTransform: "capitalize"
+      }
+    }
 
     return (
       <div className="notes-item flex-grow-1 mb-3">
-        <h5>{title}</h5>
+        <h5 style={styles.title}>{title}</h5>
         <div className="hr"/>
         <div>{description}</div>
       </div>

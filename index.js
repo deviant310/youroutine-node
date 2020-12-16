@@ -3,12 +3,25 @@ require('dotenv').config();
 const path = require('path');
 const { exec } = require('child_process');
 const { existsSync } = require('fs');
-
 const dotenvParse = require('dotenv-parse-variables');
 
-const isProduction = process.env.NODE_ENV === 'production';
+const {
+  NODE_ENV: nodeEnv,
+  IS_COMMAND: isCommand,
+  APP_DEV_INSPECT: appDevInspect,
+  APP_DEV_INSPECT_BRK: appDevInspectBrk
+} = {
+  ...{
+    NODE_ENV: 'development',
+    IS_COMMAND: false,
+    APP_DEV_INSPECT: false,
+    APP_DEV_INSPECT_BRK: false
+  },
+  ...dotenvParse(process.env)
+}
 
-const { APP_DEV_INSPECT, APP_DEV_INSPECT_BRK } = dotenvParse(process.env);
+const args = process.argv.slice(2);
+const isProduction = nodeEnv === 'production';
 
 const buildPath = path.resolve(process.cwd(), 'build');
 const entryPath = path.resolve(process.cwd(), 'app.js');
@@ -40,29 +53,50 @@ const build = () => {
 
 const watch = () => {
   const options = {
-    inspect: APP_DEV_INSPECT,
-    breakOnStart: APP_DEV_INSPECT_BRK
+    inspect: appDevInspect,
+    breakOnStart: appDevInspectBrk
   }
 
-  const nodemon = exec([
+  const watcher = exec([
     './node_modules/.bin/nodemon',
-    options.inspect && `--inspect${options.breakOnStart ? '-brk' : ''}=0.0.0.0`,
+    options.inspect && `--inspect${options.breakOnStart ? '-brk' : ''}=0.0.0.0:9229`,
     entryPath,
     `--watch`,
     buildPath
-  ].filter(Boolean).join(' '));
+  ].filter(Boolean).concat(args).join(' '));
   
-  nodemon.stdout.pipe(process.stdout);
+  watcher.stdout.pipe(process.stdout);
+}
+
+const serveCommand = () => {
+  const options = {
+    inspect: appDevInspect,
+    breakOnStart: appDevInspectBrk
+  }
+  
+  const command = exec([
+    'node',
+    options.inspect && `--inspect${options.breakOnStart ? '-brk' : ''}=0.0.0.0:9222`,
+    entryPath
+  ].filter(Boolean).concat(args).join(' '));
+  
+  command.stdout.pipe(process.stdout);
 }
 
 const serve = () => {
-  const node = exec([ 'node', entryPath ].join(' '));
-  node.stdout.pipe(process.stdout);
+  const server = exec([ 'node', entryPath ].filter(Boolean).concat(args).join(' '));
+  server.stdout.pipe(process.stdout);
 }
 
-if(isProduction){
-  checkBuild();
-  serve();
-} else {
-  build().then(watch);
-}
+(async () => {
+  if(isProduction || isCommand)
+    checkBuild();
+  else
+    await build();
+  
+  if(isCommand){
+    serveCommand();
+  } else {
+    isProduction ? serve() : watch();
+  }
+})();
