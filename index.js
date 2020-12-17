@@ -57,7 +57,7 @@ const watch = () => {
     breakOnStart: appDevInspectBrk
   }
 
-  const watcher = exec([
+  const nodemon = exec([
     './node_modules/.bin/nodemon',
     options.inspect && `--inspect${options.breakOnStart ? '-brk' : ''}=0.0.0.0:9229`,
     entryPath,
@@ -65,27 +65,26 @@ const watch = () => {
     buildPath
   ].filter(Boolean).concat(args).join(' '));
   
-  watcher.stdout.pipe(process.stdout);
+  nodemon.stdout.pipe(process.stdout);
 }
 
 const serveCommand = () => {
-  const options = {
-    inspect: appDevInspect,
-    breakOnStart: appDevInspectBrk
-  }
-  
-  const command = exec([
+  const command = [
     'node',
-    options.inspect && `--inspect${options.breakOnStart ? '-brk' : ''}=0.0.0.0:9222`,
-    entryPath
-  ].filter(Boolean).concat(args).join(' '));
+    appDevInspect && `--inspect${appDevInspectBrk ? '-brk' : ''}=0.0.0.0:9222`,
+    entryPath,
+  ].filter(Boolean).concat(args).join(' ');
   
-  command.stdout.pipe(process.stdout);
+  const node = exec(command);
+  
+  node.stdout.pipe(process.stdout);
+  node.stderr.pipe(process.stderr);
 }
 
 const serve = () => {
-  const server = exec([ 'node', entryPath ].filter(Boolean).concat(args).join(' '));
-  server.stdout.pipe(process.stdout);
+  const node = exec([ 'node', entryPath ].filter(Boolean).concat(args).join(' '));
+  node.stdout.pipe(process.stdout);
+  node.stderr.pipe(process.stderr);
 }
 
 (async () => {

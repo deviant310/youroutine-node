@@ -1,43 +1,22 @@
-import dotenvParse, { Parsed } from 'dotenv-parse-variables';
 import { Client, QueryResult, QueryResultRow } from "pg";
 import waitPort from 'wait-port';
 import isReachable from 'is-reachable';
 
-import { Connection } from 'core/db/connection';
+import { Driver } from 'core/db/driver';
 
-const {
-  DB_HOST: dbHost = 'localhost',
-  DB_PORT: dbPort = 5432,
-  DB_NAME: dbName = 'postgres',
-  DB_USER: dbUser = 'postgres',
-  DB_PASSWORD: dbPassword = ''
-} : {
-  DB_HOST?: string;
-  DB_PORT?: number;
-  DB_NAME?: string;
-  DB_USER?: string;
-  DB_PASSWORD?: string;
-} = dotenvParse(process.env as Parsed);
-
-class PostgreSQL implements Connection<Client, QueryResult | QueryResultRow> {
+class PostgreSQL implements Driver<Client, QueryResult | QueryResultRow> {
   private static _client: Client;
   
   get connection(){
     return PostgreSQL._client;
   }
   
-  async init(){
+  async init(host: string, port: number, database: string, user: string, password: string){
     if(!PostgreSQL._client) {
-      const dbIsReachable = await isReachable(`${dbHost}:${dbPort}`);
+      const dbIsReachable = await isReachable(`${host}:${port}`);
       if(!dbIsReachable)
-        await waitPort({ host: dbHost, port: dbPort, timeout: 15000 });
-      const client = new Client({
-        user: dbUser,
-        host: dbHost,
-        database: dbName,
-        password: dbPassword,
-        port: dbPort,
-      });
+        await waitPort({ host, port, timeout: 15000 });
+      const client = new Client({ host, port, database, user, password });
       await client.connect();
       PostgreSQL._client = client;
     }

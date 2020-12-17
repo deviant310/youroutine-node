@@ -6,7 +6,7 @@ import {
   RouteComponent
 } from "core/route.component";
 
-import Notes, { Note } from "models/notes";
+import Note from "models/note";
 
 import NotesListItem from 'components/notes.list.item';
 
@@ -23,7 +23,7 @@ class NotesList extends React.PureComponent<Props, State> {
   }
   
   async componentDidMount() {
-    let data = await (new Notes).list();
+    let data = await (new Note).list();
     this.setState({...this.state, ...{data}})
   }
   

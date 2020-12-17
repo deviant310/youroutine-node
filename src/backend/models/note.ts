@@ -5,9 +5,9 @@ type Entity = {
   description: string
 }
 
-class Notes extends Model<Entity> {
+class Note extends Model<Entity> {
   table = 'notes';
 }
 
 export { Entity };
-export default Notes;
+export default Note;

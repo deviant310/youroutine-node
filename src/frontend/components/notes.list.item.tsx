@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Styles } from "core/styles";
 import { RouteComponent } from "core/route.component";
 
-import { Note } from "models/notes";
+import Note from "models/note";
 
 type Props = RouteComponent<Note>
 

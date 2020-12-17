@@ -4,6 +4,7 @@ const { resolve } = require('path');
 const express = require('express');
 const minimist = require('minimist');
 const dotenvParse = require('dotenv-parse-variables');
+const chalk = require('chalk');
 
 const headers = {
   "Access-Control-Allow-Origin": "*"
@@ -28,7 +29,8 @@ const { bootstrap, Console } = require(rootPath);
   if(IS_COMMAND){
     const { _: commands, ...options } = minimist(process.argv.slice(2));
     const [ command ] = commands;
-    const exitCode = await Console.runCommand(command, options);
+    const exitCode = await Console.runCommand(command, options)
+        .catch(e => console.error(chalk.red(e.message)));
     process.exit(exitCode);
   } else {
     app.use(express.static(publicPath, {

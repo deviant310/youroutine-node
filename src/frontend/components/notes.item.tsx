@@ -6,7 +6,7 @@ import {
   RouteComponent
 } from "core/route.component";
 
-import Notes, { Note, NoteRequest } from "models/notes";
+import Note, { NoteRequest } from "models/note";
 
 type Props = RouteComponentRequest<NoteRequest>;
 type State = RouteComponent<Note | void>;
@@ -22,7 +22,7 @@ class NotesItem extends React.PureComponent<Props, State> {
   
   async componentDidMount() {
     let id : number = this.props.id || +this.props.match.params.id,
-      data = await (new Notes).getById(id);
+      data = await (new Note).getById(id);
     this.setState({...this.state, ...{data}})
   }
   

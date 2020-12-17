@@ -1,7 +1,12 @@
-type Connection<Client, QueryResult> = {
-  connection: Client;
-  init(): Promise<Connection<Client, QueryResult>>;
-  query(queryString: string, values?: any[]): QueryResult
-};
+type Connection = {
+  driver: string;
+  host: string;
+  port: number;
+  database: string;
+  user: string;
+  password: string;
+}
 
-export { Connection };
+type Connections = { [key: string]: Connection}
+
+export { Connection, Connections };

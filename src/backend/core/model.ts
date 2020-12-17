@@ -1,13 +1,13 @@
 import DB from "core/db";
 import { Client } from "pg";
-import { Connection } from "core/db/connection";
+import { Driver } from "core/db/driver";
 
 type Selectable = {
   filters?: Array<object>;
   select?: Array<string>
 }
 
-type ModelEntity<Entity> = Promise<Connection<Client, Entity>>;
+type ModelEntity<Entity> = Promise<Driver<Client, Entity>>;
 
 abstract class Model<Entity> {
   protected table: string = '';

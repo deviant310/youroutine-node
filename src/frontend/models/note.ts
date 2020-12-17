@@ -9,9 +9,9 @@ interface Note extends NoteRequest {
   description: string
 }
 
-class Notes extends Model<Note> {
-  endpoint = '/api/notes';
+class Note extends Model<Note> {
+  endpoint = '/api/note';
 }
 
-export { NoteRequest, Note };
-export default Notes;
+export { NoteRequest };
+export default Note;

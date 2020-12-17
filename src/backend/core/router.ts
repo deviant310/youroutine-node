@@ -11,11 +11,14 @@ export default function(app: Express) {
     const controllerName = parse(key).name;
     
     for(let route of routes){
-      const { method, path, bodyParser, handler } = route;
+      const { method, path, bodyParser, response: responseHandler } = route;
       
       app[method](join(`/${controllerName}`, path), bodyParser, async (request: Request, response: Response) => {
-        const message = await handler(request);
-        response.send(message);
+        const { error, message } = await responseHandler(request)
+          .then(message => ({error: false, message}))
+          .catch(({message}) => ({error: true, message}));
+        
+        response.status(error ? 404 : 200).send(message);
       });
     }
   }
