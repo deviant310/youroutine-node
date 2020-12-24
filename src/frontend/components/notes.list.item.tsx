@@ -10,7 +10,7 @@ type Props = RouteComponent<Note>
 
 class NotesListItem extends React.PureComponent<Props> {
   render(){
-    const { id, title, description } = this.props.data;
+    const { id, title, description } = this.props.data as Note;
     const styles: Styles = {
       title: {
         textTransform: "capitalize"

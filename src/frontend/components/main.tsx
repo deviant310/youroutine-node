@@ -1,5 +1,6 @@
 import React from 'react';
 
+import Login from 'components/login';
 import NotesList from 'components/notes.list';
 import NotesItem from 'components/notes.item';
 
@@ -16,6 +17,7 @@ class Main extends React.PureComponent {
         </h3>
         <div className="mb-4" />
         <Switch>
+          <Route exact path="/login" component={Login}/>
           <Route exact path="/notes" component={NotesList}/>
           <Route exact path="/notes/:id" component={NotesItem} />
           <Redirect to='/notes'/>

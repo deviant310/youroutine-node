@@ -1,6 +1,8 @@
+import { compare } from "bcrypt";
+
 import Model from "core/model";
 import DB from "core/db";
-import { compare } from "bcrypt";
+import Session from "core/session";
 
 type Entity = {
   id: number;
@@ -10,11 +12,6 @@ type Entity = {
 
 class User extends Model<Entity> {
   table = 'users';
-  
-  async authorize(){
-    return {name: 'Vasya'};
-    throw new Error('Unauthorized');
-  }
   
   async authenticate(login: string, password: string){
     const db = await DB();
@@ -28,13 +25,13 @@ class User extends Model<Entity> {
     if(!user)
       throw new Error('Unauthenticated');
     
-    const { password: passwordHash } = user;
+    const { id, password: passwordHash } = user;
     const isAuthenticated = await compare(password, passwordHash);
     
     if(!isAuthenticated)
       throw new Error('Unauthenticated');
     
-    return user;
+    return id;
   }
 }
 

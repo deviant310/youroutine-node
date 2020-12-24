@@ -1,9 +1,12 @@
 import React from 'react';
 
+import { Redirect } from "react-router-dom";
+
 import { Selectable } from "core/model";
 import {
   RouteComponentRequest,
-  RouteComponent
+  RouteComponent,
+  Redirectable
 } from "core/route.component";
 
 import Note from "models/note";
@@ -28,9 +31,15 @@ class NotesList extends React.PureComponent<Props, State> {
   }
   
   render(){
+    const { data } = this.state;
+    const { redirect } = data as Redirectable;
+    
+    if(redirect)
+      return <Redirect to={redirect}/>
+    
     return (
       <div className="notes">
-        {this.state.data.map((item: Note, index: number) => (
+        {(data as Note[]).map((item: Note, index: number) => (
           <NotesListItem data={item} key={index}/>
         ))}
       </div>

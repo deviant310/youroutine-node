@@ -23,13 +23,13 @@ const rootPath = resolve(process.cwd(), 'build');
 const publicPath = resolve(rootPath, 'public');
 
 const app = express();
-const { bootstrap, Console } = require(rootPath);
+const { bootstrap, runCommand } = require(rootPath);
 
 (async () => {
   if(IS_COMMAND){
     const { _: commands, ...options } = minimist(process.argv.slice(2));
     const [ command ] = commands;
-    const exitCode = await Console.runCommand(command, options)
+    const exitCode = await runCommand(command, options)
         .catch(e => console.error(chalk.red(e.message)));
     process.exit(exitCode);
   } else {

@@ -30,7 +30,7 @@ class NotesItem extends React.PureComponent<Props, State> {
     if(!this.state.data)
       return '';
     
-    const { title, description } = this.state.data;
+    const { title, description } = this.state.data as Note;
     const styles: Styles = {
       title: {
         textTransform: "capitalize"

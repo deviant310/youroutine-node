@@ -1,40 +1,47 @@
+import { randomBytes } from "crypto";
+
 import express from "express";
+import { withMiddleware, Route, Routable } from "core/router/route";
 
-import Route from "core/route";
 import User from "models/user";
+import auth from "middlewares/auth";
 
-interface Params {
+interface ModelParams {
   model: string;
   id: number
 }
 
-interface Body {
+interface AuthBody {
   login: string;
   password: string;
 }
 
-const routes: Route<Params, Body, any>[] = [
+type AuthRoute = Route<any, AuthBody>;
+type ModelRoute = Route<ModelParams, any>;
+
+const bodyParser = express.json();
+
+const authRoutes: Routable<AuthRoute> = () => ([
   {
     method: 'post',
     path: '/login',
-    bodyParser: express.json(),
-    response: async ({ body }) => {
+    response: async ({ session, body }) => {
       const { login, password } = body;
-      return (new User).authenticate(login, password);
+      
+      const userId = await (new User).authenticate(login, password);
+      if(userId) {
+        session.userId = userId;
+        session.accessToken = randomBytes(24).toString('hex');
+      }
+      return userId;
     }
   },
-  {
-    method: 'get',
-    path: '/auth',
-    bodyParser: express.json(),
-    response: async () => {
-      return (new User).authorize();
-    }
-  },
+]);
+
+const modelRoutes: Routable<ModelRoute> = () => ([
   {
     method: 'get',
     path: '/:model',
-    bodyParser: express.json(),
     response: async ({ params }) => {
       const { model } = params;
       const Model = require(`models/${model}`).default;
@@ -44,13 +51,15 @@ const routes: Route<Params, Body, any>[] = [
   {
     method: 'get',
     path: '/:model/:id',
-    bodyParser: express.json(),
     response: async ({ params }) => {
       const { model, id } = params;
       const Model = require(`models/${model}`).default;
       return (new Model).getById(id);
     }
   }
-];
+]);
 
-export default routes;
+export default [
+  withMiddleware(authRoutes, bodyParser),
+  withMiddleware(modelRoutes, bodyParser, auth)
+];

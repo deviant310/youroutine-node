@@ -1,12 +1,14 @@
 import { Express } from "express";
 
-import Console from "core/console";
+import runCommand from "core/console";
 import migrate from "core/migrate";
-import applyRoutes from "core/router";
+import Router from "core/router";
+import applySession from "core/session";
 
 async function bootstrap(app: Express) {
   await migrate();
-  applyRoutes(app);
+  applySession(app);
+  new Router(app);
 }
 
-export { bootstrap, Console };
+export { bootstrap, runCommand };
