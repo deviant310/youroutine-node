@@ -2,8 +2,8 @@ import { Express, Request, RequestHandler } from "express";
 
 type Route<Params = any, Body = any, Response = any> = {
   method: keyof Express;
-  path: string;
-  response(request: Request<Params, Response, Body>): Promise<Response>;
+  path: string | RegExp;
+  response?(request: Request<Params, Response, Body>): Promise<Response>;
 };
 
 type Middleware = RequestHandler[];

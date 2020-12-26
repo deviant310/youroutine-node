@@ -10,7 +10,7 @@ interface Note extends NoteRequest {
 }
 
 class Note extends Model<Note> {
-  endpoint = '/api/note';
+  endpoint = '/api/notes';
 }
 
 export { NoteRequest };

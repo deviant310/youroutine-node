@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 
 declare module 'express-session' {
   interface SessionData {
@@ -8,13 +8,18 @@ declare module 'express-session' {
 }
 
 const auth = (request: Request, response: Response, next: NextFunction) => {
-  const { session } = request;
+  const { session, xhr } = request;
   const { userId } = session;
   
   if(userId){
     next();
   } else {
-    response.status(302).send({redirect: '/login'});
+    if(xhr){
+      response.status(302).send({redirect: '/login'});
+    } else {
+      response.redirect('/login');
+    }
+    
   }
 };
 

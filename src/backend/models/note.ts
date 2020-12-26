@@ -1,13 +1,14 @@
 import Model from "core/model";
 
-type Entity = {
+interface Note {
   title: string
   description: string
 }
 
-class Note extends Model<Entity> {
+class Note extends Model<Note> {
+  static routeAlias = 'notes';
+  
   table = 'notes';
 }
 
-export { Entity };
 export default Note;

@@ -2,15 +2,16 @@ import { compare } from "bcrypt";
 
 import Model from "core/model";
 import DB from "core/db";
-import Session from "core/session";
 
-type Entity = {
+interface User {
   id: number;
   name: string;
   email: string;
 }
 
-class User extends Model<Entity> {
+class User extends Model<User> {
+  static routeAlias = 'users';
+  
   table = 'users';
   
   async authenticate(login: string, password: string){
@@ -35,5 +36,4 @@ class User extends Model<Entity> {
   }
 }
 
-export { Entity };
 export default User;
