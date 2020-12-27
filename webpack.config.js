@@ -1,4 +1,4 @@
-const { resolve } = require('path');
+const { resolve, parse } = require('path');
 const { readdirSync, lstatSync } = require('fs');
 
 const NodeExternals = require('webpack-node-externals');
@@ -15,9 +15,9 @@ const backendEntryPath = resolve(entryPath, 'backend');
 
 const parseDirAliases = path => {
   return readdirSync(path).reduce((obj, dirent) => {
-    let direntPath = resolve(path, dirent);
-    if(lstatSync(direntPath).isDirectory())
-      obj[dirent] = direntPath;
+    const direntPath = resolve(path, dirent);
+    const direntName = lstatSync(direntPath).isDirectory() ? dirent : parse(dirent).name;
+    obj[direntName] = direntPath;
     return obj;
   }, {});
 };

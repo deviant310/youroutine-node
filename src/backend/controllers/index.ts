@@ -1,14 +1,20 @@
-import { withMiddleware, Routable } from "core/router/route";
+import { withMiddleware, Routable, routePath } from "core/router/route";
 
 import auth from "middlewares/auth";
 
-const routes: Routable = () => {
-  return [
-    {
-      method: 'get',
-      path: /\/(?!login).*/,
-    }
-  ];
-};
+const routes: Routable = () => ([
+  {
+    method: 'get',
+    path: routePath('signIn')
+  },
+  {
+    method: 'get',
+    path: routePath('model')
+  },
+  {
+    method: 'get',
+    path: routePath('modelItem')
+  }
+]);
 
 export default withMiddleware(routes, auth);

@@ -23,7 +23,7 @@ const rootPath = resolve(process.cwd(), 'build');
 const publicPath = resolve(rootPath, 'public');
 
 const app = express();
-const { bootstrap, runCommand } = require(rootPath);
+const { bootstrap, routes, runCommand } = require(rootPath);
 
 (async () => {
   if(IS_COMMAND){
@@ -36,11 +36,17 @@ const { bootstrap, runCommand } = require(rootPath);
     app.use(express.static(publicPath, {
       setHeaders: res => res.set(headers)
     }));
-  
+    
     await bootstrap(app);
   
-    app.get('*', (req, res) => {
-      res.sendFile(resolve(publicPath, 'index.html'))
+    
+    for(let route of Object.values(routes))
+      app.get(route, (request, response) => {
+        response.sendFile(resolve(publicPath, 'index.html'))
+      });
+    
+    app.use((request, response) => {
+      response.status(404).send('Not Found');
     });
   
     const listener = app.listen(APP_PORT, APP_HOST, () => {

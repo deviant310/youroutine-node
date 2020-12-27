@@ -1,24 +1,30 @@
 import { Express, Request, RequestHandler } from "express";
 
-type Route<Params = any, Body = any, Response = any> = {
+import routes from "config/routes";
+
+export type Route<Params = any, Body = any, Response = any> = {
   method: keyof Express;
   path: string | RegExp;
   response?(request: Request<Params, Response, Body>): Promise<Response>;
 };
 
-type Middleware = RequestHandler[];
+export type Middleware = RequestHandler[];
 
-type RouteOptions = {
+export type RouteOptions = {
   prefix?: string;
-  handlers?: Middleware;
+  middleware?: Middleware;
 }
 
-type Routable<RouteType = Route> = () => {
+export type Routable<RouteType = Route> = () => {
   [Symbol.iterator](): Iterator<RouteType>;
   middleware?: Middleware;
 }
 
-const withMiddleware = (getRoutes: Routable, ...handlers: Middleware) : Routable => (() => {
+export type RoutableStatic = {
+  routeName?: string;
+}
+
+export const withMiddleware = (getRoutes: Routable, ...handlers: Middleware) : Routable => (() => {
   const routes = getRoutes();
   Object.defineProperty(routes, 'middleware', {
     enumerable: false,
@@ -28,4 +34,6 @@ const withMiddleware = (getRoutes: Routable, ...handlers: Middleware) : Routable
   return routes;
 });
 
-export { withMiddleware, Route, Routable, RouteOptions };
+export const routePath = (key: keyof typeof routes) => {
+  return routes[key];
+}

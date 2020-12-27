@@ -1,6 +1,12 @@
-import DB from "core/db";
 import { Client } from "pg";
-import { Driver } from "core/db/driver";
+
+import { RoutableStatic } from "../router/route";
+import DB from "../db";
+import { Driver } from "../db/driver";
+
+interface ModelStatic<Model> extends RoutableStatic {
+  new(...args: any): Model;
+}
 
 type Selectable = {
   filters?: Array<object>;
@@ -9,7 +15,7 @@ type Selectable = {
 
 type ModelEntity<Entity> = Promise<Driver<Client, Entity>>;
 
-abstract class Model<Entity> {
+abstract class Model<Entity = {}> {
   protected table: string = '';
   
   constructor() {
@@ -43,5 +49,5 @@ abstract class Model<Entity> {
   }
 }
 
-export { Selectable, ModelEntity };
+export { ModelStatic, Selectable, ModelEntity };
 export default Model;

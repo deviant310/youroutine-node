@@ -34,12 +34,12 @@ class Router {
     for(let route of routes)
       this.handleRoute(route, {
         prefix: routesPrefix,
-        handlers: routes.middleware
+        middleware: routes.middleware
       });
   }
   
   private handleRoute(route: Route, options: RouteOptions){
-    const { prefix, handlers } = options;
+    const { prefix, middleware } = options;
     
     const {
       method: requestMethod,
@@ -50,11 +50,20 @@ class Router {
     const method = requestMethod;
     const path = typeof requestPath === 'string' ? join(`/${prefix || ''}`, requestPath) : requestPath;
     
-    this.app[method](path, ...handlers || [], async (request: Request, response: Response, next: NextFunction) => {
+    this.app[method](path, ...middleware || [], async (request: Request, response: Response, next: NextFunction) => {
       if(typeof responseHandler === 'function'){
         const { error, message } = await responseHandler(request)
           .then(message => ({error: false, message}))
-          .catch(({message}) => ({error: true, message}));
+          .catch(e => ({
+            error: true,
+            message: Object
+              .getOwnPropertyNames(e)
+              .reduce((obj: { [key: string]: any }, key) => {
+                const value = e[key];
+                obj[key] = value.match(/\n/) ? value.split(/\n/) : value;
+                return obj;
+              }, {})
+          }));
   
         response.status(error ? 404 : 200).send(message);
       } else {

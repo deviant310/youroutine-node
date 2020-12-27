@@ -1,17 +1,14 @@
 import { compare } from "bcrypt";
 
-import Model from "core/model";
+import Index, { ModelStatic } from "core/model";
 import DB from "core/db";
 
-interface User {
+interface UserEntity {
   id: number;
   name: string;
   email: string;
 }
-
-class User extends Model<User> {
-  static routeAlias = 'users';
-  
+class User extends Index<UserEntity> {
   table = 'users';
   
   async authenticate(login: string, password: string){
@@ -36,4 +33,6 @@ class User extends Model<User> {
   }
 }
 
-export default User;
+const UserStatic: ModelStatic<User> = User;
+
+export default UserStatic;

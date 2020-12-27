@@ -1,14 +1,16 @@
-import Model from "core/model";
+import Index, { ModelStatic } from "core/model";
 
-interface Note {
+interface NoteEntity {
   title: string
   description: string
 }
-
-class Note extends Model<Note> {
-  static routeAlias = 'notes';
+debugger;
+class Note extends Index<NoteEntity> {
+  static routeName = 'notes';
   
   table = 'notes';
 }
 
-export default Note;
+const NoteStatic: ModelStatic<Note> = Note;
+
+export default NoteStatic;

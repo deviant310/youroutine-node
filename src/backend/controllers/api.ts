@@ -1,11 +1,11 @@
-import { resolve, parse } from "path";
 import { randomBytes } from "crypto";
 
-import express from "express";
-import { withMiddleware, Route, Routable } from "core/router/route";
+import { withMiddleware, routePath, Route, Routable } from "core/router/route";
+import { getContextModuleByRouteName } from "core/model/context";
 
 import User from "models/user";
-import auth from "middlewares/auth";
+import Auth from "middlewares/auth";
+import { json } from "middlewares/body.parsers";
 
 interface ModelRequestParams {
   model: string;
@@ -20,12 +20,10 @@ interface AuthRequestBody {
 type AuthRoute = Route<any, AuthRequestBody>;
 type ModelRoute = Route<ModelRequestParams>;
 
-const bodyParser = express.json();
-
 const authRoutes: Routable<AuthRoute> = () => ([
   {
     method: 'post',
-    path: '/login',
+    path: routePath('auth'),
     response: async ({ session, body }) => {
       const { login, password } = body;
       
@@ -40,34 +38,22 @@ const authRoutes: Routable<AuthRoute> = () => ([
 ]);
 
 const modelRoutes: Routable<ModelRoute> = () => {
-  const modelsContext = require.context('models', false, /\.ts$/);
-  const models = modelsContext
-    .keys()
-    .reduce((obj: { [ key: string ]: any }, key) => {
-      const module = modelsContext(key).default;
-      const { routeAlias } = module || {}
-      const newKey = routeAlias || parse(key).name;
-      obj[newKey] = module;
-      return obj;
-    }, {});
-  const modelsPath = `/:model(${Object.keys(models).join('|')})`;
-  
   return [
     {
       method: 'get',
-      path: resolve(modelsPath),
+      path: routePath('model'),
       response: async ({ params }) => {
-        const { model } = params;
-        const Model = models[model];
+        const { model: modelRouteName } = params;
+        const Model = getContextModuleByRouteName(modelRouteName);
         return (new Model).list();
       }
     },
     {
       method: 'get',
-      path: resolve(modelsPath, ':id'),
+      path: routePath('modelItem'),
       response: async ({ params }) => {
-        const { model, id } = params;
-        const Model = models[model];
+        const { model: modelRouteName, id } = params;
+        const Model = getContextModuleByRouteName(modelRouteName);
         return (new Model).getById(id);
       }
     }
@@ -75,6 +61,6 @@ const modelRoutes: Routable<ModelRoute> = () => {
 };
 
 export default [
-  withMiddleware(authRoutes, bodyParser),
-  withMiddleware(modelRoutes, bodyParser, auth)
+  withMiddleware(authRoutes, json),
+  withMiddleware(modelRoutes, json, Auth)
 ];

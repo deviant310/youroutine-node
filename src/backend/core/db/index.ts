@@ -4,9 +4,9 @@ import {
   QueryResultRow as PostgreSQLQueryResultRow
 } from "pg";
 
-import { Driver } from "core/db/driver";
+import { Driver } from "./driver";
 
-const dbDrivers = require.context('core/db/drivers', true, /\.ts$/);
+const dbDrivers = require.context('./drivers', true, /\.ts$/);
 
 import connections from "config/db";
 
