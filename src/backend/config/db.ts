@@ -1,7 +1,5 @@
 import dotenvParse, { Parsed } from "dotenv-parse-variables";
 
-import { Connections } from "core/db/connection";
-
 const {
   DB_CONNECTION: dbConnection = 'pgsql',
   DB_HOST: dbHost = 'localhost',
@@ -18,7 +16,7 @@ const {
   DB_PASSWORD?: string;
 } = dotenvParse(process.env as Parsed);
 
-const connections: Connections = {
+const connections = {
   default: {
     driver: dbConnection,
     host: dbHost,

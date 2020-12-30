@@ -1,6 +1,6 @@
 import { resolve } from "path";
 
-import { getContextModulesRoutesNames } from "core/model/context";
+import { getContextModulesRoutesNames } from "core/model";
 
 const modelsPaths = getContextModulesRoutesNames();
 

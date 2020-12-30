@@ -4,7 +4,7 @@ interface NoteEntity {
   title: string
   description: string
 }
-debugger;
+
 class Note extends Index<NoteEntity> {
   static routeName = 'notes';
   

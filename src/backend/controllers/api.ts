@@ -1,7 +1,7 @@
 import { randomBytes } from "crypto";
 
 import { withMiddleware, routePath, Route, Routable } from "core/router/route";
-import { getContextModuleByRouteName } from "core/model/context";
+import { getContextModuleByRouteName } from "core/model";
 
 import User from "models/user";
 import Auth from "middlewares/auth";

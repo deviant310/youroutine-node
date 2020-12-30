@@ -1,8 +1,8 @@
-import { Client } from "pg";
-
 import { RoutableStatic } from "../router/route";
-import DB from "../db";
-import { Driver } from "../db/driver";
+import PostgreSQL from "../db/drivers/pgsql";
+import DBDefiner from "../db";
+
+import { buildContext } from "../module/require";
 
 interface ModelStatic<Model> extends RoutableStatic {
   new(...args: any): Model;
@@ -13,14 +13,16 @@ type Selectable = {
   select?: Array<string>
 }
 
-type ModelEntity<Entity> = Promise<Driver<Client, Entity>>;
+const { db } = DBDefiner;
 
-abstract class Model<Entity = {}> {
+const context = buildContext<ModelStatic<any>>(require.context('models', false, /\.ts$/));
+
+abstract class Model<T = {}> {
   protected table: string = '';
   
   constructor() {
     return new Proxy(this, {
-      get: (instance: Model<Entity>, property: keyof Model<Entity>) => {
+      get: (instance: Model<T>, property: keyof Model<T>) => {
         if(!this.table)
           throw new Error(`Table of ${this.constructor.name} is undefined! Define it in your model class!`);
         return instance[property];
@@ -28,26 +30,44 @@ abstract class Model<Entity = {}> {
     });
   }
   
-  async list(selection: Selectable = {}) : ModelEntity<Entity[]> {
-    const db = await DB();
+  async list(selection: Selectable = {}) {
+    const { query }: PostgreSQL = await db();
     
-    const query = await db.query(`
+    const { rows } = await query<T>(`
       select * from ${this.table}
     `);
     
-    return query.rows;
+    return rows;
   }
   
-  async getById(id: number) : ModelEntity<Entity> {
-    const db = await DB();
+  async getById(id: number) {
+    const { query }: PostgreSQL = await db();
     
-    const query = await db.query(`
+    const { rows } = await query<T>(`
       select * from ${this.table} where id=$1 limit 1
     `, [ id ]);
     
-    return query.rows[0];
+    return rows[0];
   }
 }
 
-export { ModelStatic, Selectable, ModelEntity };
+function getContextModuleByRouteName(routeName: string){
+  const entry = Object.entries(context)
+    .find(([, model]) => model.routeName === routeName);
+  const [, contextItem] = entry as [string, ModelStatic<any>];
+  return contextItem;
+}
+
+function getContextModulesRoutesNames() : string[] {
+  return Object.entries(context)
+    .map(([, { routeName }]) => routeName)
+    .filter((v): v is string => typeof v !== 'undefined');
+}
+
+export {
+  getContextModuleByRouteName,
+  getContextModulesRoutesNames,
+  ModelStatic,
+  Selectable
+};
 export default Model;

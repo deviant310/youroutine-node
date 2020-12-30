@@ -1,17 +1,17 @@
-import { Client, QueryResult, QueryResultRow } from "pg";
+import { Client } from "pg";
 import waitPort from 'wait-port';
 import isReachable from 'is-reachable';
 
-import { Driver } from 'core/db/driver';
+import { DB } from '../../';
 
-class PostgreSQL implements Driver<Client, QueryResult | QueryResultRow> {
-  private static _client: Client;
+class PostgreSQL implements DB.Driver {
+  private static _client: DB.Client;
   
   get connection(){
     return PostgreSQL._client;
   }
   
-  async init(host: string, port: number, database: string, user: string, password: string){
+  async init(host: string, port: number, database: string, user: string, password: string) {
     if(!PostgreSQL._client) {
       const dbIsReachable = await isReachable(`${host}:${port}`);
       if(!dbIsReachable)
@@ -24,9 +24,11 @@ class PostgreSQL implements Driver<Client, QueryResult | QueryResultRow> {
     return this;
   }
   
-  async query(queryText: string, values?: any[]){
+  async query<T>(queryText: string, values?: any[]): Promise<DB.QueryResult<T>> {
     return this.connection.query(queryText, values);
   }
 }
+
+const PostgreSQLStatic: DB.DriverStatic = PostgreSQL;
 
 export default PostgreSQL;

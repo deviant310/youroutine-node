@@ -9,6 +9,7 @@ const { DefinePlugin } = require('webpack');
 const entryPath = resolve(process.cwd(), 'src');
 const outputPath = resolve(process.cwd(), 'build');
 const storagePath = resolve(process.cwd(), 'storage');
+const nodeModulesPath = resolve(process.cwd(), 'node_modules');
 
 const frontendEntryPath = resolve(entryPath, 'frontend');
 const backendEntryPath = resolve(entryPath, 'backend');
@@ -124,7 +125,7 @@ module.exports = (env = {}) => {
       libraryTarget: "commonjs2"
     },
     resolve: {
-      extensions: [ '.ts', '.js'],
+      extensions: [ '.ts', '.js', '.sql'],
       alias: backendAliases
     },
     module: {
@@ -136,6 +137,14 @@ module.exports = (env = {}) => {
               loader: 'ts-loader'
             }
           ]
+        },
+        {
+          test: /\.sql$/,
+          use: [
+            {
+              loader: 'raw-loader'
+            }
+          ]
         }
       ]
     },
@@ -143,7 +152,8 @@ module.exports = (env = {}) => {
       new DefinePlugin(buildGlobalsFromAliases({
         ...backendAliases,
         ...{
-          storage: storagePath
+          storage: storagePath,
+          node_modules: nodeModulesPath
         }
       }))
     ]

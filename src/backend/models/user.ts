@@ -1,24 +1,27 @@
 import { compare } from "bcrypt";
 
-import Index, { ModelStatic } from "core/model";
-import DB from "core/db";
+import Model, { ModelStatic } from "core/model";
+import DBDefiner from "core/db";
 
 interface UserEntity {
   id: number;
   name: string;
   email: string;
 }
-class User extends Index<UserEntity> {
+
+const { db } = DBDefiner;
+
+class User extends Model<UserEntity> {
   table = 'users';
   
   async authenticate(login: string, password: string){
-    const db = await DB();
+    const { query } = await db();
     
-    const query = await db.query(`
+    const { rows } = await query(`
       select * from ${this.table} where email=$1 limit 1
     `, [ login ]);
     
-    const user = query.rows[0];
+    const user = rows[0];
     
     if(!user)
       throw new Error('Unauthenticated');

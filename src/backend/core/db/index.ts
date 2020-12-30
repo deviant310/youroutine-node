@@ -1,26 +1,30 @@
-import {
-  Client as PostgreSQLClient,
-  QueryResult as PostgreSQLQueryResult,
-  QueryResultRow as PostgreSQLQueryResultRow
-} from "pg";
-
-import { Driver } from "./driver";
-
-const dbDrivers = require.context('./drivers', true, /\.ts$/);
-
 import connections from "config/db";
+
+import { buildContext } from "../module/require";
+
+import { DB } from "../";
+
+type Connections = typeof connections;
+
+const context = buildContext<DB.DriverStatic>(require.context('./drivers', false, /\.ts$/));
 
 const defaultConnection = 'default';
 
-type DBClient = PostgreSQLClient;
-type DBQueryResult = PostgreSQLQueryResult | PostgreSQLQueryResultRow;
-
-export default function(connectionName: keyof typeof connections = defaultConnection) : Driver<DBClient, DBQueryResult> {
-  const connection = connections[connectionName] || connections[defaultConnection];
+class DBDefiner {
+  static getConnection(connectionName: keyof Connections = defaultConnection){
+    return connections[connectionName];
+  }
   
-  const { driver, host, port, database, user, password } = connection;
+  static dbClass(driverName: string): DB.DriverStatic {
+    return context[driverName];
+  }
   
-  const DBDriverStatic = dbDrivers(`./${driver}.ts`).default;
-  
-  return (new DBDriverStatic).init(host, port, database, user, password);
+  static async db(connectionName: keyof Connections = defaultConnection) {
+    const connection = this.getConnection(connectionName);
+    const { driver, host, port, database, user, password } = connection;
+    const DBDriverStatic = this.dbClass(driver);
+    return (new DBDriverStatic).init(host, port, database, user, password)
+  }
 }
+
+export default DBDefiner;

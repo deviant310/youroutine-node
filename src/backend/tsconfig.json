@@ -4,6 +4,7 @@
     "target": "ES6",
     "esModuleInterop": true,
     "strict": true,
+    "declaration": true,
     "baseUrl": "."
   }
 }
