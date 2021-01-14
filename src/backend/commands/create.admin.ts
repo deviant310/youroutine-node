@@ -1,10 +1,9 @@
 import { hash } from "bcrypt";
 
-import DBDefiner from "core/db";
+import { Command } from "core/console";
+import db from "core/db";
 
-const { db } = DBDefiner;
-
-export default async function(){
+const command: Command = async () => {
   const { query } = await db();
   
   const passwordHash = await hash('123456', 5);
@@ -15,3 +14,5 @@ export default async function(){
   
   return 0;
 }
+
+export default command;

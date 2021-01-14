@@ -40,7 +40,6 @@
     "@babel/plugin-proposal-class-properties": "^7.12.1",
     "@babel/plugin-proposal-export-default-from": "^7.12.1",
     "@babel/preset-react": "^7.12.1",
-    "@jfxteam/api": "^2.0.1",
     "@jfxteam/font-awesome": "^1.0.0",
     "@types/bcrypt": "^3.0.0",
     "@types/connect-pg-simple": "^4.2.2",

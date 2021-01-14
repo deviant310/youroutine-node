@@ -137,14 +137,6 @@ module.exports = (env = {}) => {
               loader: 'ts-loader'
             }
           ]
-        },
-        {
-          test: /\.sql$/,
-          use: [
-            {
-              loader: 'raw-loader'
-            }
-          ]
         }
       ]
     },

@@ -1,10 +1,10 @@
-import DB from 'core/db';
+import db from 'core/db';
 
 class CreateUsersTable {
   async up(){
-    const db = await DB();
+    const { query } = await db();
     
-    return db.query(`
+    await query(`
       create table users (
         id bigserial not null constraint users_pkey primary key,
         name varchar(255) not null,

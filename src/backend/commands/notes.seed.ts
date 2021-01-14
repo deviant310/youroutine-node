@@ -1,10 +1,9 @@
 import { lorem } from "faker";
 
-import DBDefiner from 'core/db';
+import { Command } from "core/console";
+import db from 'core/db';
 
-const { db } = DBDefiner;
-
-export default async function(){
+const command: Command = async () => {
   const { query } = await db();
   
   for(let i in Array.from(Array(3)))
@@ -14,3 +13,5 @@ export default async function(){
   
   return 0;
 }
+
+export default command;

@@ -1,15 +1,13 @@
 import { compare } from "bcrypt";
 
-import Model, { ModelStatic } from "core/model";
-import DBDefiner from "core/db";
+import db from "core/db";
+import Model, { ModelConstructor } from "core/db/model";
 
 interface UserEntity {
   id: number;
   name: string;
   email: string;
 }
-
-const { db } = DBDefiner;
 
 class User extends Model<UserEntity> {
   table = 'users';
@@ -36,6 +34,6 @@ class User extends Model<UserEntity> {
   }
 }
 
-const UserStatic: ModelStatic<User> = User;
+const UserConstructor: ModelConstructor<User> = User;
 
-export default UserStatic;
+export default UserConstructor;

@@ -23,7 +23,7 @@ const rootPath = resolve(process.cwd(), 'build');
 const publicPath = resolve(rootPath, 'public');
 
 const app = express();
-const { bootstrap, routes, runCommand } = require(rootPath);
+const { bootstrap, init, routes, runCommand } = require(rootPath);
 
 (async () => {
   if(IS_COMMAND){
@@ -38,7 +38,6 @@ const { bootstrap, routes, runCommand } = require(rootPath);
     }));
     
     await bootstrap(app);
-  
     
     for(let route of Object.values(routes))
       app.get(route, (request, response) => {

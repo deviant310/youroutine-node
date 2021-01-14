@@ -1,7 +1,8 @@
 import { randomBytes } from "crypto";
 
-import { withMiddleware, routePath, Route, Routable } from "core/router/route";
-import { getContextModuleByRouteName } from "core/model";
+import { Routable, Route } from "core/router";
+import { withMiddleware, routePath } from "core/router/route";
+import Model from "core/db/model";
 
 import User from "models/user";
 import Auth from "middlewares/auth";
@@ -19,6 +20,8 @@ interface AuthRequestBody {
 
 type AuthRoute = Route<any, AuthRequestBody>;
 type ModelRoute = Route<ModelRequestParams>;
+
+const { getContextModelByRouteName } = Model;
 
 const authRoutes: Routable<AuthRoute> = () => ([
   {
@@ -44,7 +47,7 @@ const modelRoutes: Routable<ModelRoute> = () => {
       path: routePath('model'),
       response: async ({ params }) => {
         const { model: modelRouteName } = params;
-        const Model = getContextModuleByRouteName(modelRouteName);
+        const Model = getContextModelByRouteName(modelRouteName);
         return (new Model).list();
       }
     },
@@ -53,7 +56,7 @@ const modelRoutes: Routable<ModelRoute> = () => {
       path: routePath('modelItem'),
       response: async ({ params }) => {
         const { model: modelRouteName, id } = params;
-        const Model = getContextModuleByRouteName(modelRouteName);
+        const Model = getContextModelByRouteName(modelRouteName);
         return (new Model).getById(id);
       }
     }

@@ -1,10 +1,17 @@
 import { Express } from "express";
 
-import runCommand from "core/console";
-import migrate from "core/migrate";
+import Model from "core/db/model";
+import Console from "core/console";
 import Router from "core/router";
-import applySession from "core/session";
-import routes from "config/routes";
+import { applySession, migrate } from "core";
+
+const { setContext: setModelContext } = Model;
+const { setContext: setConsoleContext, runCommand } = Console;
+
+setModelContext(require.context('models', false, /\.ts$/));
+setConsoleContext(require.context('commands', false, /\.ts$/));
+
+const routes = require("config/routes").default;
 
 async function bootstrap(app: Express) {
   await migrate();

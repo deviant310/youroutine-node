@@ -1,4 +1,5 @@
-import { withMiddleware, Routable, routePath } from "core/router/route";
+import { Routable } from "core/router";
+import { withMiddleware, routePath } from "core/router/route";
 
 import auth from "middlewares/auth";
 

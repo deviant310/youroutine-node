@@ -1,8 +1,8 @@
 import { resolve } from "path";
 
-import { getContextModulesRoutesNames } from "core/model";
+import Model from "core/db/model";
 
-const modelsPaths = getContextModulesRoutesNames();
+const modelsPaths = Model.getConstructorsRoutesNames();
 
 const routes = {
   signIn: '/signin',
