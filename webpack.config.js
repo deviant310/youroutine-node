@@ -2,154 +2,72 @@ const { resolve, parse } = require('path');
 const { readdirSync, lstatSync } = require('fs');
 
 const NodeExternals = require('webpack-node-externals');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { DefinePlugin } = require('webpack');
 
-const entryPath = resolve(process.cwd(), 'src');
-const outputPath = resolve(process.cwd(), 'build');
-const storagePath = resolve(process.cwd(), 'storage');
-const nodeModulesPath = resolve(process.cwd(), 'node_modules');
+const { buildDir, sourceDir, storageDir } = require('./config.json');
 
-const frontendEntryPath = resolve(entryPath, 'frontend');
-const backendEntryPath = resolve(entryPath, 'backend');
+const { WEBPACK_MODE } = process.env;
 
-const parseDirAliases = path => {
+const sourcePath = resolve(sourceDir);
+const buildPath = resolve(buildDir);
+const storagePath = resolve(storageDir);
+const nodeModulesPath = resolve('node_modules');
+
+function parseDirAliases (path) {
   return readdirSync(path).reduce((obj, dirent) => {
     const direntPath = resolve(path, dirent);
     const direntName = lstatSync(direntPath).isDirectory() ? dirent : parse(dirent).name;
     obj[direntName] = direntPath;
     return obj;
   }, {});
-};
+}
 
-const buildGlobalsFromAliases = aliases => {
+function buildGlobalsFromAliases (aliases) {
   return Object.entries(aliases).reduce((obj, [key, value]) => {
     obj[`${key.toUpperCase()}_PATH`] = `'${value}'`;
     return obj;
   }, {});
+}
+
+const aliases = {
+  ...parseDirAliases(sourcePath),
+  appConfig: resolve('config.json')
 };
 
-module.exports = (env = {}) => {
-  const { production } = env;
-  const mode = production ? 'production' : 'development';
-  const [
-    frontendAliases,
-    backendAliases
-  ] = [frontendEntryPath, backendEntryPath].map(parseDirAliases);
-  
-  const frontendConfig = {
-    entry: {
-      index: frontendEntryPath
-    },
-    mode,
-    output: {
-      path: resolve(outputPath, 'public'),
-      publicPath: '/'
-    },
-    resolve: {
-      extensions: ['.ts', '.tsx', '.js', '.jsx'],
-      alias: frontendAliases
-    },
-    module: {
-      rules: [
-        {
-          test: /\.tsx?$/,
-          exclude: /node_modules/,
-          use: [
-            {
-              loader: 'babel-loader',
-              options: {
-                presets: ["@babel/preset-react"],
-                plugins: [
-                  "@babel/plugin-proposal-class-properties",
-                  "@babel/plugin-proposal-export-default-from"
-                ]
-              }
-            },
-            {
-              loader: 'ts-loader'
-            }
-          ]
-        },
-        {
-          test: /\.css$/,
-          use: [
-            MiniCssExtractPlugin.loader, 'css-loader'
-          ],
-        },
-        {
-          test: /\.(png|jpe?g|gif|svg)$/i,
-          use: [
-            {
-              loader: 'file-loader',
-              options: {
-                name: 'img/[path][name].[ext]',
-                context: 'src'
-              },
-            },
-          ],
-        },
-        {
-          test: /\.(woff|woff2|eot|ttf|otf)$/,
-          use: [
-            {
-              loader: 'file-loader',
-              options: {
-                name: 'fonts/[name].[ext]',
-              },
-            },
-          ],
-        },
-      ]
-    },
-    plugins: [
-      new HtmlWebpackPlugin({
-        template: resolve(frontendEntryPath, 'index.ejs')
-      }),
-      new MiniCssExtractPlugin({
-        filename: 'style.css'
-      })
+module.exports = {
+  target: 'node',
+  externals: [NodeExternals()],
+  entry: {
+    index: sourcePath
+  },
+  mode: WEBPACK_MODE === 'production' ? 'production' : 'development',
+  output: {
+    path: buildPath,
+    libraryTarget: 'umd'
+  },
+  resolve: {
+    extensions: ['.ts', '.js'],
+    alias: aliases
+  },
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: [
+          {
+            loader: 'ts-loader'
+          }
+        ]
+      }
     ]
-  }
-  
-  const backendConfig = {
-    target: 'node',
-    externals: [NodeExternals()],
-    entry: {
-      index: backendEntryPath
-    },
-    mode,
-    output: {
-      path: outputPath,
-      libraryTarget: "commonjs2"
-    },
-    resolve: {
-      extensions: [ '.ts', '.js', '.sql'],
-      alias: backendAliases
-    },
-    module: {
-      rules: [
-        {
-          test: /\.tsx?$/,
-          use: [
-            {
-              loader: 'ts-loader'
-            }
-          ]
-        }
-      ]
-    },
-    plugins: [
-      new DefinePlugin(buildGlobalsFromAliases({
-        ...backendAliases,
-        ...{
-          storage: storagePath,
-          node_modules: nodeModulesPath
-        }
-      }))
-    ]
-  }
-  
-  return [frontendConfig, backendConfig];
+  },
+  plugins: [
+    new DefinePlugin(buildGlobalsFromAliases({
+      ...aliases,
+      ...{
+        storage: storagePath,
+        node_modules: nodeModulesPath
+      }
+    }))
+  ]
 };

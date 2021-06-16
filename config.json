@@ -1,0 +1,6 @@
+{
+  "sourceDir": "./src",
+  "buildDir": "./build",
+  "publicDir": "./build/public",
+  "storageDir": "./storage"
+}

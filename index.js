@@ -1,101 +1,57 @@
-require('dotenv').config();
+const { resolve } = require('path');
 
-const path = require('path');
-const { exec } = require('child_process');
-const { existsSync } = require('fs');
+const { config: setEnv } = require('dotenv');
 const dotenvParse = require('dotenv-parse-variables');
 
+const { buildDir, sourceDir } = require('./config.json');
+const webpackConfig = require('./webpack.config.js');
+const { build, checkBuild } = require('./utils/compiler.js');
+const { demon, serve } = require('./utils/server');
+
+setEnv();
+
 const {
-  NODE_ENV: nodeEnv,
-  IS_COMMAND: isCommand,
-  APP_DEV_INSPECT: appDevInspect,
-  APP_DEV_INSPECT_BRK: appDevInspectBrk
+  NODE_ENV,
+  IS_COMMAND,
+  APP_DEV_INSPECT,
+  APP_DEV_INSPECT_BRK,
+  APP_DEV_INSPECT_CMD,
+  APP_DEV_INSPECT_CMD_BRK
 } = {
-  ...{
-    NODE_ENV: 'development',
-    IS_COMMAND: false,
-    APP_DEV_INSPECT: false,
-    APP_DEV_INSPECT_BRK: false
-  },
+  NODE_ENV: 'development',
+  IS_COMMAND: false,
+  APP_DEV_INSPECT: false,
+  APP_DEV_INSPECT_BRK: false,
+  APP_DEV_INSPECT_CMD: false,
+  APP_DEV_INSPECT_CMD_BRK: false,
   ...dotenvParse(process.env)
-}
+};
 
-const args = process.argv.slice(2);
-const isProduction = nodeEnv === 'production';
+const IS_PRODUCTION = NODE_ENV === 'production';
 
-const buildPath = path.resolve(process.cwd(), 'build');
-const entryPath = path.resolve(process.cwd(), 'app.js');
-
-const checkBuild = () => {
-  if (!existsSync(buildPath))
-    console.error('\x1b[31m%s\x1b[0m', 'Build not found! Run "npm run build" firstly!') || process.exit();
-}
-
-const build = () => {
-  return new Promise(resolve => {
-    const webpack = require('webpack');
-    const webpackConfig = require(path.resolve(process.cwd(), 'webpack.config.js'))();
-    const compiler = webpack(webpackConfig);
-    
-    compiler.watch({aggregateTimeout: 0}, (err, stats) => {
-      err && (console.log(err) || process.exit());
-      
-      console.log(stats.toString({
-        colors: true,
-        assets: false,
-        modules: false
-      }));
-      
-      resolve();
-    });
-  });
-}
-
-const watch = () => {
-  const options = {
-    inspect: appDevInspect,
-    breakOnStart: appDevInspectBrk
-  }
-
-  const nodemon = exec([
-    './node_modules/.bin/nodemon',
-    options.inspect && `--inspect${options.breakOnStart ? '-brk' : ''}=0.0.0.0:9229`,
-    entryPath,
-    `--watch`,
-    buildPath
-  ].filter(Boolean).concat(args).join(' '));
-  
-  nodemon.stdout.pipe(process.stdout);
-}
-
-const serveCommand = () => {
-  const command = [
-    'node',
-    appDevInspect && `--inspect${appDevInspectBrk ? '-brk' : ''}=0.0.0.0:9222`,
-    entryPath,
-  ].filter(Boolean).concat(args).join(' ');
-  
-  const node = exec(command);
-  
-  node.stdout.pipe(process.stdout);
-  node.stderr.pipe(process.stderr);
-}
-
-const serve = () => {
-  const node = exec([ 'node', entryPath ].filter(Boolean).concat(args).join(' '));
-  node.stdout.pipe(process.stdout);
-  node.stderr.pipe(process.stderr);
-}
+const buildPath = resolve(buildDir);
 
 (async () => {
-  if(isProduction || isCommand)
-    checkBuild();
-  else
-    await build();
-  
-  if(isCommand){
-    serveCommand();
+  if (IS_PRODUCTION || IS_COMMAND) {
+    checkBuild(buildPath);
   } else {
-    isProduction ? serve() : watch();
+    await build({ webpackConfig, watch: true });
+  }
+  
+  if (IS_COMMAND) {
+    serve(buildPath, {
+      inspect: APP_DEV_INSPECT_CMD,
+      breakOnStart: APP_DEV_INSPECT_CMD_BRK
+    });
+  } else {
+    if (IS_PRODUCTION) {
+      serve(buildPath);
+    } else {
+      demon(buildPath, {
+        watchPath: resolve(sourceDir),
+        inspect: APP_DEV_INSPECT,
+        breakOnStart: APP_DEV_INSPECT_BRK
+      });
+    }
   }
 })();
