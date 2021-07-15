@@ -1,6 +1,6 @@
 import dotenvParse, { Parsed } from 'dotenv-parse-variables';
 
-import { DriverName } from '@jsway/interior/core/db';
+import { DriverName } from '@jsway/interior/core/db/driver';
 
 const {
   DB_HOST: dbHost = 'localhost',
@@ -19,7 +19,7 @@ const {
 export default {
   connections: {
     default: {
-      driver: DriverName.PostgreSQL,
+      driver: 'pgsql' as DriverName,
       host: dbHost,
       port: dbPort,
       database: dbName,

@@ -3,10 +3,10 @@ const { resolve } = require('path');
 const { config: setEnv } = require('dotenv');
 const dotenvParse = require('dotenv-parse-variables');
 
-const { buildDir, sourceDir } = require('./config.json');
-const webpackConfig = require('./webpack.config.js');
-const { build, checkBuild } = require('./utils/compiler.js');
-const { demon, serve } = require('./utils/server');
+const { sourceDir, buildDir, storageDir } = require('../config.json');
+const compile = require('../utils/compiler');
+const exportStats = require('../utils/stats');
+const { demon, serve } = require('../utils/server');
 
 setEnv();
 
@@ -29,13 +29,17 @@ const {
 
 const IS_PRODUCTION = NODE_ENV === 'production';
 
+const sourcePath = resolve(sourceDir);
+const storagePath = resolve(storageDir);
+const sourceMigrationsPath = resolve(sourcePath, 'db/migrations');
+const storageMigrationsPath = resolve(storagePath, 'migrations.json');
 const buildPath = resolve(buildDir);
 
 (async () => {
-  if (IS_PRODUCTION || IS_COMMAND) {
-    checkBuild(buildPath);
-  } else {
-    await build({ webpackConfig, watch: true });
+  if (!IS_PRODUCTION && !IS_COMMAND) {
+    await compile(sourcePath, buildPath);
+    
+    exportStats(sourceMigrationsPath, storageMigrationsPath);
   }
   
   if (IS_COMMAND) {

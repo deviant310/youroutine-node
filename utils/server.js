@@ -34,7 +34,9 @@ function demon (entryPath, options = {}) {
 }
 
 function serve (entryPath, options = {}) {
-  if (!entryPath || !existsSync(entryPath)) { console.log(red('Server entry path is not specified!')) || process.exit() }
+  if (!entryPath || !existsSync(entryPath)) {
+    console.log(red('Server entry path is not specified!')) || process.exit();
+  }
   
   const { inspect, breakOnStart } = options;
   

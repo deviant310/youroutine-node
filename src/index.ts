@@ -1,4 +1,5 @@
-import { resolve } from 'path';
+import { readdirSync } from 'fs';
+import { resolve, parse } from 'path';
 import { AddressInfo } from 'net';
 
 import { config as setEnv } from 'dotenv';
@@ -13,14 +14,10 @@ import {
   session as initSession
 } from '@jsway/interior';
 import Console from '@jsway/interior/core/console';
+import getModulesFactory from '@jsway/interior/utils/modules-factory';
 
-import { publicDir, storageDir } from 'appConfig';
 import dbConfig from 'config/db';
 import routes from 'config/routes';
-
-const commands = require.context('console/commands', false, /\.ts$/);
-const migrations = require.context('db/migrations', false, /\.ts$/);
-const controllers = require.context('http/controllers', false, /\.ts$/);
 
 setEnv();
 
@@ -37,14 +34,17 @@ const {
 const app: Express = express();
 
 (async () => {
-  initConsole({ context: commands });
+  const commandsFactory = getModulesFactory('./console/commands');
+  const migrations = readdirSync(resolve('db/migrations'));
+  const controllers = readdirSync(resolve('http/controllers'));
+  // initConsole({ commands });
   
   await initDB(dbConfig, {
-    migrationsContext: migrations,
-    storagePath: resolve(storageDir)
+    migrations,
+    storagePath: resolve('./storage')
   });
   
-  initSession(app);
+  await initSession(app);
   
   if (IS_COMMAND) {
     const { _: commands, ...options } = minimist(process.argv.slice(2));
@@ -58,9 +58,9 @@ const app: Express = express();
     process.exit(exitCode);
   } else {
     initHttp(app, {
-      publicPath: resolve(publicDir),
+      publicPath: resolve('./build/public'),
       routesConfig: routes,
-      controllersContext: controllers
+      controllers
     });
     
     const listener = app.listen(APP_PORT, APP_HOST, () => {

@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
+    "moduleResolution": "node",
     "module": "commonjs",
     "target": "ES6",
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "strict": true,
+    "plugins": [{ "transform": "@zerollup/ts-transform-paths"}],
     "baseUrl": "./src",
-    "paths": {
-      "appConfig": ["../config.json"]
-    }
+    "paths": {"*": ["*"]},
+    "outDir": "./build",
   }
 }

@@ -1,50 +1,36 @@
-const { existsSync } = require('fs');
+const { resolve } = require('path');
+const { readdirSync, rmSync, existsSync } = require('fs');
+const { execSync } = require('child_process');
 
-const { red } = require('chalk');
-const webpack = require('webpack');
+const { npm_config_watch: watch } = process.env;
 
-function checkBuild (buildPath) {
-  if (!existsSync(buildPath)) {
-    console.log(red('Build not found! Run "npm run build" firstly!')) || process.exit();
+function compile (entryPath, outputPath) {
+  if (existsSync(outputPath)) {
+    readdirSync(outputPath).forEach(baseName => {
+      const path = resolve(outputPath, baseName);
+      
+      rmSync(path, { recursive: true });
+    });
   }
-}
-
-function build (options = {}) {
-  const { webpackConfig: getWebpackConfig, watch } = {
-    webpackConfig: undefined,
-    watch: false,
-    ...options
-  };
   
-  if (!getWebpackConfig) { console.log(red(`Webpack config is not specified at ${__filename}!`)) || process.exit() }
-  
-  const webpackConfig = typeof getWebpackConfig === 'function' ? getWebpackConfig.call() : getWebpackConfig;
-  
-  return new Promise(resolve => {
-    const compiler = webpack(webpackConfig);
-    const watchOptions = {
-      aggregateTimeout: 0
-    };
-    const callback = (err, stats) => {
-      err && (console.log(err.toString()) || process.exit());
+  return new Promise((resolve, reject) => {
+    try {
+      if (watch) {
       
-      console.log(stats.toString({
-        colors: true,
-        assets: false,
-        modules: false
-      }));
+      } else {
+        execSync([
+          `eslint ${entryPath}`,
+          'ttsc'
+        ].join(' && '), {
+          stdio: 'inherit'
+        });
+      }
       
-      stats.hasErrors() && process.exit();
-  
-      resolve(stats);
-    };
-    
-    if (watch) {
-      compiler.watch(watchOptions, callback);
-    } else {
-      compiler.run(callback);
+      resolve();
+    } catch (e) {
+      reject(e.message);
     }
   });
 }
 
-module.exports = { build, checkBuild };
+module.exports = compile;
