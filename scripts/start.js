@@ -31,17 +31,36 @@ const IS_PRODUCTION = NODE_ENV === 'production';
 
 const sourcePath = resolve(sourceDir);
 const storagePath = resolve(storageDir);
-const sourceMigrationsPath = resolve(sourcePath, 'db/migrations');
-const storageMigrationsPath = resolve(storagePath, 'migrations.json');
+const migrationsSourcePath = resolve(sourcePath, 'db/migrations');
+const migrationsStoragePath = resolve(storagePath, 'migrations.json');
 const buildPath = resolve(buildDir);
 
 (async () => {
   if (!IS_PRODUCTION && !IS_COMMAND) {
     await compile(sourcePath, buildPath);
-    
-    exportStats(sourceMigrationsPath, storageMigrationsPath);
+
+    exportStats(migrationsSourcePath, migrationsStoragePath);
+
+    // const existedMigrationData: MigrationData = existsSync(migrationsStoragePath) ? JSON.parse(readFileSync(migrationsStoragePath).toString()) : {};
+    const migrationData = await Object.entries(migrationsFactory)
+      .sort(([, { createdAt: nextCreatedAt }], [, { createdAt: currentCreatedAt }]) => {
+        return nextCreatedAt.getTime() - currentCreatedAt.getTime();
+      })
+      .reduce((p, [key, { module: MigrationClass }]) => p.then(async (obj: Record<string, Date>) => {
+      const migration = new MigrationClass();
+
+      await migration.up();
+
+      obj[key] = new Date();
+      return obj;
+    }), Promise.resolve({}));
+
+    /* writeFileSync(dataFilePath, JSON.stringify({
+      ...existedMigrationData,
+      ...migrationData
+    }, null, 2)); */
   }
-  
+
   if (IS_COMMAND) {
     serve(buildPath, {
       inspect: APP_DEV_INSPECT_CMD,
