@@ -3,9 +3,7 @@ const { resolve } = require('path');
 const { config: setEnv } = require('dotenv');
 const dotenvParse = require('dotenv-parse-variables');
 
-const { sourceDir, buildDir, storageDir } = require('../config.json');
 const compile = require('../utils/compiler');
-const exportStats = require('../utils/stats');
 const { demon, serve } = require('../utils/server');
 
 setEnv();
@@ -13,6 +11,8 @@ setEnv();
 const {
   NODE_ENV,
   IS_COMMAND,
+  APP_SOURCE_DIR,
+  APP_BUILD_DIR,
   APP_DEV_INSPECT,
   APP_DEV_INSPECT_BRK,
   APP_DEV_INSPECT_CMD,
@@ -20,6 +20,8 @@ const {
 } = {
   NODE_ENV: 'development',
   IS_COMMAND: false,
+  APP_SOURCE_DIR: './src',
+  APP_BUILD_DIR: './build',
   APP_DEV_INSPECT: false,
   APP_DEV_INSPECT_BRK: false,
   APP_DEV_INSPECT_CMD: false,
@@ -29,36 +31,13 @@ const {
 
 const IS_PRODUCTION = NODE_ENV === 'production';
 
-const sourcePath = resolve(sourceDir);
-const storagePath = resolve(storageDir);
-const migrationsSourcePath = resolve(sourcePath, 'db/migrations');
-const migrationsStoragePath = resolve(storagePath, 'migrations.json');
-const buildPath = resolve(buildDir);
+const sourcePath = resolve(APP_SOURCE_DIR);
+const buildPath = resolve(APP_BUILD_DIR);
 
 (async () => {
   if (!IS_PRODUCTION && !IS_COMMAND) {
-    await compile(sourcePath, buildPath);
-
-    exportStats(migrationsSourcePath, migrationsStoragePath);
-
-    // const existedMigrationData: MigrationData = existsSync(migrationsStoragePath) ? JSON.parse(readFileSync(migrationsStoragePath).toString()) : {};
-    const migrationData = await Object.entries(migrationsFactory)
-      .sort(([, { createdAt: nextCreatedAt }], [, { createdAt: currentCreatedAt }]) => {
-        return nextCreatedAt.getTime() - currentCreatedAt.getTime();
-      })
-      .reduce((p, [key, { module: MigrationClass }]) => p.then(async (obj: Record<string, Date>) => {
-      const migration = new MigrationClass();
-
-      await migration.up();
-
-      obj[key] = new Date();
-      return obj;
-    }), Promise.resolve({}));
-
-    /* writeFileSync(dataFilePath, JSON.stringify({
-      ...existedMigrationData,
-      ...migrationData
-    }, null, 2)); */
+    await compile(sourcePath, buildPath, true)
+      .catch(process.exit);
   }
 
   if (IS_COMMAND) {
@@ -71,7 +50,7 @@ const buildPath = resolve(buildDir);
       serve(buildPath);
     } else {
       demon(buildPath, {
-        watchPath: resolve(sourceDir),
+        watchPath: resolve(buildPath, 'index.js'),
         inspect: APP_DEV_INSPECT,
         breakOnStart: APP_DEV_INSPECT_BRK
       });

@@ -21,7 +21,8 @@
     "semi": [2, "always", {"omitLastInOneLineBlock": true}],
     "no-trailing-spaces": "off",
     "no-undef": "off",
-    "no-use-before-define": "off"
+    "no-use-before-define": "off",
+    "spaced-comment": "off"
   },
   "overrides": [
     {
@@ -40,7 +41,9 @@
         }],
         "@typescript-eslint/no-unused-vars": "error",
         "@typescript-eslint/semi": [2, "always", {"omitLastInOneLineBlock": true}],
-        "@typescript-eslint/no-floating-promises": "off"
+        "@typescript-eslint/no-floating-promises": "off",
+        "@typescript-eslint/promise-function-async": "off",
+        "@typescript-eslint/no-unnecessary-type-assertion": "off"
       }
     }
   ]

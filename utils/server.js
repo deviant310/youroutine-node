@@ -1,4 +1,4 @@
-const { exec } = require('child_process');
+const { exec, execSync } = require('child_process');
 const { existsSync } = require('fs');
 
 const { red } = require('chalk');
@@ -16,7 +16,7 @@ function demon (entryPath, options = {}) {
   
   const { watchPath, inspect, breakOnStart } = options;
   
-  const nodemon = exec(
+  const cp = exec(
     [
       './node_modules/.bin/nodemon',
       inspect && `--inspect${breakOnStart ? '-brk' : ''}=${inspect}`,
@@ -29,8 +29,8 @@ function demon (entryPath, options = {}) {
       .join(' ')
   );
   
-  nodemon.stdout.pipe(process.stdout);
-  nodemon.stderr.pipe(process.stderr);
+  cp.stdout.pipe(process.stdout);
+  cp.stderr.pipe(process.stderr);
 }
 
 function serve (entryPath, options = {}) {
@@ -40,7 +40,7 @@ function serve (entryPath, options = {}) {
   
   const { inspect, breakOnStart } = options;
   
-  const node = exec(
+  const cp = exec(
     [
       'node',
       inspect && `--inspect${breakOnStart ? '-brk' : ''}=${inspect}`,
@@ -51,8 +51,8 @@ function serve (entryPath, options = {}) {
       .join(' ')
   );
   
-  node.stdout.pipe(process.stdout);
-  node.stderr.pipe(process.stderr);
+  cp.stdout.pipe(process.stdout);
+  cp.stderr.pipe(process.stderr);
 }
 
 module.exports = { demon, serve };

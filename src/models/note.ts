@@ -1,4 +1,4 @@
-import Model, { ModelStatic } from '@jsway/interior/core/model';
+import Model from '@jsway/interior/core/model';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface NoteScheme {
@@ -10,6 +10,4 @@ class NoteModel extends Model {
   table = 'notes';
 }
 
-const NoteModelStatic: ModelStatic<NoteModel> = NoteModel;
-
-export default NoteModelStatic;
+export default NoteModel;

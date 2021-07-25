@@ -6,9 +6,8 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "strict": true,
-    "plugins": [{ "transform": "@zerollup/ts-transform-paths"}],
     "baseUrl": "./src",
     "paths": {"*": ["*"]},
-    "outDir": "./build",
+    "outDir": "./build"
   }
 }

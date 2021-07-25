@@ -13,12 +13,12 @@ export default function auth (request: Request, response: Response, next: NextFu
   const { signIn: signInPath } = routes;
   const { session, xhr, url } = request;
   const { userId } = session;
-
-  if (userId !== null) {
+  
+  if (typeof userId !== 'undefined') {
     next();
   } else {
     if (xhr) {
-      response.status(302).send({ redirect: signInPath });
+      response.status(401).send({ message: 'Unauthorized', redirect: signInPath });
     } else {
       if (url !== signInPath) {
         response.redirect(signInPath);

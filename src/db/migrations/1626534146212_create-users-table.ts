@@ -4,9 +4,9 @@ const DB = new Database();
 
 class CreateUsersTable {
   async up (): Promise<void> {
-    const { query } = await DB.connection();
+    const connection = await DB.connection();
     
-    await query(`
+    await connection.query(`
       create table users (
         id bigserial not null constraint users_pkey primary key,
         name varchar(255) not null,

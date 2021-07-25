@@ -1,12 +1,10 @@
-import { readdirSync } from 'fs';
-import { resolve, parse } from 'path';
+import { resolve } from 'path';
 import { AddressInfo } from 'net';
 
 import { config as setEnv } from 'dotenv';
 import express, { Express } from 'express';
 import minimist from 'minimist';
 import dotenvParse, { Parsed } from 'dotenv-parse-variables';
-import { red } from 'chalk';
 import {
   console as initConsole,
   db as initDB,
@@ -14,7 +12,7 @@ import {
   session as initSession
 } from '@jsway/interior';
 import Console from '@jsway/interior/core/console';
-import getModulesFactory from '@jsway/interior/utils/modules-factory';
+import importAll from '@jsway/interior/utils/import-all';
 
 import dbConfig from 'config/db';
 import routes from 'config/routes';
@@ -23,10 +21,14 @@ setEnv();
 
 const {
   IS_COMMAND = false,
+  APP_PUBLIC_DIR = './build/public',
+  APP_STORAGE_DIR = './storage',
   APP_HOST = 'localhost',
   APP_PORT = 3000
 }: {
   IS_COMMAND?: boolean
+  APP_PUBLIC_DIR?: string
+  APP_STORAGE_DIR?: string
   APP_HOST?: string
   APP_PORT?: number
 } = dotenvParse(process.env as Parsed);
@@ -34,14 +36,13 @@ const {
 const app: Express = express();
 
 (async () => {
-  const commandsFactory = getModulesFactory('./console/commands');
-  const migrations = readdirSync(resolve('db/migrations'));
-  const controllers = readdirSync(resolve('http/controllers'));
-  // initConsole({ commands });
+  initConsole({
+    commandsFactory: importAll(require.context('./console/commands', false, /\.ts$/))
+  });
   
   await initDB(dbConfig, {
-    migrations,
-    storagePath: resolve('./storage')
+    migrationsFactory: importAll(require.context('./db/migrations', false, /\.ts$/)),
+    migrationsStoragePath: resolve(APP_STORAGE_DIR, 'migrations.json')
   });
   
   await initSession(app);
@@ -49,18 +50,15 @@ const app: Express = express();
   if (IS_COMMAND) {
     const { _: commands, ...options } = minimist(process.argv.slice(2));
     const [command] = commands;
-    const exitCode = await Console.runCommand(command, options)
-      .catch((e: { message: string }) => {
-        console.error(red(e.message));
-        return 1;
-      });
+    
+    const exitCode = await Console.runCommand(command, options);
     
     process.exit(exitCode);
   } else {
     initHttp(app, {
-      publicPath: resolve('./build/public'),
+      publicPath: resolve(APP_PUBLIC_DIR),
       routesConfig: routes,
-      controllers
+      controllersFactory: importAll(require.context('./http/controllers', false, /\.ts$/))
     });
     
     const listener = app.listen(APP_PORT, APP_HOST, () => {

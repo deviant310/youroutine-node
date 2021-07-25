@@ -1,17 +1,26 @@
 const { resolve, parse } = require('path');
 const { readdirSync, lstatSync } = require('fs');
 
+const { config: setEnv } = require('dotenv');
+const dotenvParse = require('dotenv-parse-variables');
 const NodeExternals = require('webpack-node-externals');
-const { DefinePlugin } = require('webpack');
-
-const { buildDir, sourceDir, storageDir } = require('./config.json');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 const { WEBPACK_MODE } = process.env;
 
-const sourcePath = resolve(sourceDir);
-const buildPath = resolve(buildDir);
-const storagePath = resolve(storageDir);
-const nodeModulesPath = resolve('node_modules');
+setEnv();
+
+const {
+  APP_SOURCE_DIR,
+  APP_BUILD_DIR
+} = {
+  APP_SOURCE_DIR: './src',
+  APP_BUILD_DIR: './build',
+  ...dotenvParse(process.env)
+};
+
+const sourcePath = resolve(APP_SOURCE_DIR);
+const buildPath = resolve(APP_BUILD_DIR);
 
 function parseDirAliases (path) {
   return readdirSync(path).reduce((obj, dirent) => {
@@ -22,17 +31,7 @@ function parseDirAliases (path) {
   }, {});
 }
 
-function buildGlobalsFromAliases (aliases) {
-  return Object.entries(aliases).reduce((obj, [key, value]) => {
-    obj[`${key.toUpperCase()}_PATH`] = `'${value}'`;
-    return obj;
-  }, {});
-}
-
-const aliases = {
-  ...parseDirAliases(sourcePath),
-  appConfig: resolve('config.json')
-};
+const aliases = parseDirAliases(sourcePath);
 
 module.exports = {
   target: 'node',
@@ -43,6 +42,7 @@ module.exports = {
   mode: WEBPACK_MODE === 'production' ? 'production' : 'development',
   output: {
     path: buildPath,
+    filename: '[name].js',
     libraryTarget: 'umd'
   },
   resolve: {
@@ -62,12 +62,15 @@ module.exports = {
     ]
   },
   plugins: [
-    new DefinePlugin(buildGlobalsFromAliases({
-      ...aliases,
-      ...{
-        storage: storagePath,
-        node_modules: nodeModulesPath
+    new ESLintPlugin({
+      extensions: ['ts', 'tsx']
+    }),
+    {
+      apply: compiler => {
+        compiler.hooks.shouldEmit.tap('Plugin', (compilation) => {
+          return !compilation.getStats().hasErrors();
+        });
       }
-    }))
+    }
   ]
 };

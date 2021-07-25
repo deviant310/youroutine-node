@@ -2,8 +2,13 @@ import { resolve } from 'path';
 import { readFileSync } from 'fs';
 
 import Database from '@jsway/interior/core/db';
+import dotenvParse, { Parsed } from 'dotenv-parse-variables';
 
-declare const NODE_MODULES_PATH: string;
+const {
+  NODE_MODULES_PATH = './node_modules'
+}: {
+  NODE_MODULES_PATH?: string
+} = dotenvParse(process.env as Parsed);
 
 const DB = new Database();
 
@@ -14,9 +19,9 @@ class CreateSessionTable {
   async up (): Promise<void> {
     const queryFilePath = resolve(NODE_MODULES_PATH, 'connect-pg-simple', 'table.sql');
     const queryString = readFileSync(queryFilePath).toString();
-    const { query } = await DB.connection();
+    const connection = await DB.connection();
     
-    await query(queryString);
+    await connection.query(queryString);
   }
   
   async down (): Promise<void> {

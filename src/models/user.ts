@@ -1,6 +1,6 @@
 import { compare } from 'bcrypt';
 
-import Model, { ModelStatic } from '@jsway/interior/core/model';
+import Model from '@jsway/interior/core/model';
 import Database from '@jsway/interior/core/db';
 import PostgreSQL from '@jsway/interior/core/db/drivers/pgsql';
 
@@ -26,20 +26,18 @@ class UserModel extends Model {
     const user = rows[0];
     
     if (typeof user === 'undefined') {
-      throw new Error('Unauthenticated');
+      throw new Error(`User "${login}" is not exist!`);
     }
     
     const { id, password: passwordHash } = user;
     const isAuthenticated = await compare(password, passwordHash);
     
     if (!isAuthenticated) {
-      throw new Error('Unauthenticated');
+      throw new Error(`Wrong password for user "${login}"!`);
     }
     
     return id;
   }
 }
 
-const UserStatic: ModelStatic<UserModel> = UserModel;
-
-export default UserStatic;
+export default UserModel;

@@ -1,34 +1,40 @@
-const { resolve } = require('path');
-const { readdirSync, rmSync, existsSync } = require('fs');
-const { execSync } = require('child_process');
+const webpack = require('webpack');
 
-const { npm_config_watch: watch } = process.env;
+const getWebpackConfig = require('../webpack.config');
 
-function compile (entryPath, outputPath) {
-  if (existsSync(outputPath)) {
-    readdirSync(outputPath).forEach(baseName => {
-      const path = resolve(outputPath, baseName);
-      
-      rmSync(path, { recursive: true });
-    });
-  }
+async function compile (entryPath, outputPath, watch) {
+  const webpackConfig = typeof getWebpackConfig === 'function' ? getWebpackConfig.call() : getWebpackConfig;
   
   return new Promise((resolve, reject) => {
-    try {
-      if (watch) {
+    let firstCompiling = true;
+    
+    const compiler = webpack(webpackConfig);
+    const watchOptions = {
+      aggregateTimeout: 0
+    };
+    const callback = (err, stats) => {
+      watch && !firstCompiling && console.clear();
       
-      } else {
-        execSync([
-          `eslint ${entryPath}`,
-          'ttsc'
-        ].join(' && '), {
-          stdio: 'inherit'
-        });
-      }
+      err && (console.log(err.toString()) || process.exit());
       
-      resolve();
-    } catch (e) {
-      reject(e.message);
+      console.log(stats.toString({
+        colors: true,
+        hash: false,
+        assets: false,
+        modules: false
+      }));
+  
+      stats.hasErrors() && reject(new Error());
+  
+      resolve(stats);
+  
+      firstCompiling = false;
+    };
+    
+    if (watch) {
+      compiler.watch(watchOptions, callback);
+    } else {
+      compiler.run(callback);
     }
   });
 }
