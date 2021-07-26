@@ -11,7 +11,6 @@ setEnv();
 const {
   NODE_ENV,
   IS_COMMAND,
-  APP_SOURCE_DIR,
   APP_BUILD_DIR,
   APP_DEV_INSPECT,
   APP_DEV_INSPECT_BRK,
@@ -20,7 +19,6 @@ const {
 } = {
   NODE_ENV: 'development',
   IS_COMMAND: false,
-  APP_SOURCE_DIR: './src',
   APP_BUILD_DIR: './build',
   APP_DEV_INSPECT: false,
   APP_DEV_INSPECT_BRK: false,
@@ -31,12 +29,11 @@ const {
 
 const IS_PRODUCTION = NODE_ENV === 'production';
 
-const sourcePath = resolve(APP_SOURCE_DIR);
 const buildPath = resolve(APP_BUILD_DIR);
 
 (async () => {
   if (!IS_PRODUCTION && !IS_COMMAND) {
-    await compile(sourcePath, buildPath, true)
+    await compile({ watch: true })
       .catch(process.exit);
   }
 

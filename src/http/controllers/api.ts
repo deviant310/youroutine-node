@@ -47,7 +47,7 @@ function getAuthControllers (options: ControllersExtractorOptions): Controllers<
             
             session.userId = userId;
             session.accessToken = accessToken;
-  
+            
             response.send({ accessToken });
           })
           .catch(err => {
@@ -67,7 +67,7 @@ function getModelControllers (options: ControllersExtractorOptions): Controllers
       path: routes.entityIndex,
       handler: async ({ params }, response: Response) => {
         const { model: route } = params;
-  
+        
         const ModelClass = getModelByRoute(route);
         
         if (typeof ModelClass !== 'undefined') {
@@ -83,9 +83,9 @@ function getModelControllers (options: ControllersExtractorOptions): Controllers
       path: routes.entityItem,
       handler: async ({ params }, response: Response) => {
         const { model: route, id } = params;
-  
+        
         const ModelClass = getModelByRoute(route);
-  
+        
         if (typeof ModelClass !== 'undefined') {
           const item = await (new ModelClass()).getById(id);
           response.send(item);
