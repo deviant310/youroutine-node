@@ -23,6 +23,8 @@ type AuthController = Http.Controller<unknown, AuthRequestBody>;
 type ModelController = Http.Controller<ModelRequestParams>;
 type Models = UserModel | NoteModel;
 
+const http = new HttpFactory;
+
 function getModelByRoute (route: string): Model.ModelStatic<Models> | undefined {
   switch (route) {
     case 'users': return UserModel;
@@ -98,6 +100,6 @@ function getModelControllers (options: Http.ControllersExtractorOptions): Http.C
 }
 
 export default [
-  HttpFactory.setMiddleware(getAuthControllers, headers, json),
-  HttpFactory.setMiddleware(getModelControllers, headers, json, auth)
+  http.setMiddleware(getAuthControllers, headers, json),
+  http.setMiddleware(getModelControllers, headers, json, auth)
 ];
