@@ -5,14 +5,7 @@ import { config as setEnv } from 'dotenv';
 import express, { Express } from 'express';
 import minimist from 'minimist';
 import dotenvParse, { Parsed } from 'dotenv-parse-variables';
-import {
-  console as initConsole,
-  db as initDB,
-  http as initHttp,
-  session as initSession
-} from '@jsway/interior';
-import Console from '@jsway/interior/core/console';
-import importAll from '@jsway/interior/utils/import-all';
+import Interior, { Console, importAll } from '@jsway/interior';
 
 import dbConfig from 'config/db';
 import routes from 'config/routes';
@@ -36,16 +29,16 @@ const {
 const app: Express = express();
 
 (async () => {
-  initConsole({
+  Interior.initConsole({
     commandsFactory: importAll(require.context('./console/commands', false, /\.ts$/))
   });
   
-  await initDB(dbConfig, {
+  await Interior.initDB(dbConfig, {
     migrationsFactory: importAll(require.context('./db/migrations', false, /\.ts$/)),
     migrationsStoragePath: resolve(APP_STORAGE_DIR, 'migrations.json')
   });
   
-  await initSession(app);
+  await Interior.initSession(app);
   
   if (IS_COMMAND) {
     const { _: commands, ...options } = minimist(process.argv.slice(2));
@@ -55,7 +48,7 @@ const app: Express = express();
     
     process.exit(exitCode);
   } else {
-    initHttp(app, {
+    Interior.initHttp(app, {
       publicPath: resolve(APP_PUBLIC_DIR),
       routesConfig: routes,
       controllersFactory: importAll(require.context('./http/controllers', false, /\.ts$/))

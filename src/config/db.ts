@@ -19,7 +19,7 @@ const {
 export default {
   connections: {
     default: {
-      driver: 'pgsql' as DriverName,
+      driver: 'pgsql' as DB.DriverName,
       host: dbHost,
       port: dbPort,
       database: dbName,
