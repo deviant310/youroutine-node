@@ -5,7 +5,7 @@ import { config as setEnv } from 'dotenv';
 import express, { Express } from 'express';
 import minimist from 'minimist';
 import dotenvParse, { Parsed } from 'dotenv-parse-variables';
-import Interior, { Console, importAll } from '@jsway/interior';
+import Interior, { ConsoleFactory, importAll } from '@jsway/interior';
 
 import dbConfig from 'config/db';
 import routes from 'config/routes';
@@ -44,7 +44,7 @@ const app: Express = express();
     const { _: commands, ...options } = minimist(process.argv.slice(2));
     const [command] = commands;
     
-    const exitCode = await Console.runCommand(command, options);
+    const exitCode = await ConsoleFactory.runCommand(command, options);
     
     process.exit(exitCode);
   } else {

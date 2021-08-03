@@ -1,10 +1,10 @@
-import Database from '@jsway/interior/core/db';
+import { DatabaseFactory } from '@jsway/interior';
 
-const DB = new Database();
+const db = new DatabaseFactory();
 
 class CreateNotesTable {
   async up (): Promise<void> {
-    const connection = await DB.connection();
+    const connection = await db.connection();
     
     await connection.query(`
       create table notes (
@@ -16,7 +16,7 @@ class CreateNotesTable {
   }
   
   async down (): Promise<void> {
-    
+  
   }
 }
 

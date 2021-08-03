@@ -1,8 +1,6 @@
 import { compare } from 'bcrypt';
 
-import Model from '@jsway/interior/core/model';
-import Database from '@jsway/interior/core/db';
-import PostgreSQL from '@jsway/interior/core/db/drivers/pgsql';
+import { DatabaseFactory, PostgreSQLDriver, ModelFactory } from '@jsway/interior';
 
 interface UserScheme {
   id: number
@@ -11,13 +9,13 @@ interface UserScheme {
   email: string
 }
 
-const DB = new Database();
+const db = new DatabaseFactory();
 
-class UserModel extends Model {
+class UserModel extends ModelFactory {
   table = 'users';
   
   async authenticate (login: string, password: string): Promise<number> {
-    const connection = await DB.connection<PostgreSQL>();
+    const connection = await db.connection<PostgreSQLDriver>();
     
     const { rows } = await connection.query<UserScheme>(`
       select * from ${this.table} where email=$1 limit 1

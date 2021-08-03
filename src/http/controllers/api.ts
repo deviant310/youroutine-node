@@ -1,8 +1,7 @@
 import { randomBytes } from 'crypto';
 import { Request, Response } from 'express';
 
-import Http, { Controllers, Controller, ControllersExtractorOptions } from '@jsway/interior/core/http';
-import Model, { ModelStatic } from '@jsway/interior/core/model';
+import { Http, HttpFactory, Model, ModelFactory, Database } from '@jsway/interior';
 
 import auth from 'http/middleware/auth';
 import { json } from 'http/middleware/body-parsers';
@@ -20,17 +19,18 @@ interface ModelRequestParams {
   id: number
 }
 
-type AuthController = Controller<unknown, AuthRequestBody>;
-type ModelController = Controller<ModelRequestParams>;
+type AuthController = Http.Controller<unknown, AuthRequestBody>;
+type ModelController = Http.Controller<ModelRequestParams>;
+type Models = UserModel | NoteModel;
 
-function getModelByRoute (route: string): ModelStatic | undefined {
+function getModelByRoute (route: string): Model.ModelStatic<Models> | undefined {
   switch (route) {
     case 'users': return UserModel;
     case 'notes': return NoteModel;
   }
 }
 
-function getAuthControllers (options: ControllersExtractorOptions): Controllers<AuthController> {
+function getAuthControllers (options: Http.ControllersExtractorOptions): Http.Controllers<AuthController> {
   const { routesConfig: routes } = options;
   
   return [
@@ -58,7 +58,7 @@ function getAuthControllers (options: ControllersExtractorOptions): Controllers<
   ];
 }
 
-function getModelControllers (options: ControllersExtractorOptions): Controllers<ModelController> {
+function getModelControllers (options: Http.ControllersExtractorOptions): Http.Controllers<ModelController> {
   const { routesConfig: routes } = options;
   
   return [
@@ -68,11 +68,11 @@ function getModelControllers (options: ControllersExtractorOptions): Controllers
       handler: async ({ params }, response: Response) => {
         const { model: route } = params;
         
-        const ModelClass = getModelByRoute(route);
+        const ModelFactoryClass = getModelByRoute(route);
         
-        if (typeof ModelClass !== 'undefined') {
-          const list = await (new ModelClass() as Model).list();
-          response.send(list);
+        if (typeof ModelFactoryClass !== 'undefined') {
+          const list = await (new ModelFactoryClass() as ModelFactory).list() as Database.QueryResult<unknown>;
+          response.send(list.rows);
         } else {
           response.status(500).send(`No model class presented for route "${String(route)}"`);
         }
@@ -98,6 +98,6 @@ function getModelControllers (options: ControllersExtractorOptions): Controllers
 }
 
 export default [
-  Http.setMiddleware(getAuthControllers, headers, json),
-  Http.setMiddleware(getModelControllers, headers, json, auth)
+  HttpFactory.setMiddleware(getAuthControllers, headers, json),
+  HttpFactory.setMiddleware(getModelControllers, headers, json, auth)
 ];

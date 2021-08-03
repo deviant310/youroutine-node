@@ -1,4 +1,4 @@
-import Model from '@jsway/interior/core/model';
+import { ModelFactory } from '@jsway/interior';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface NoteScheme {
@@ -6,7 +6,7 @@ interface NoteScheme {
   description: string
 }
 
-class NoteModel extends Model {
+class NoteModel extends ModelFactory {
   table = 'notes';
 }
 

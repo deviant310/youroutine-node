@@ -1,13 +1,12 @@
 import { hash } from 'bcrypt';
 
-import Database from '@jsway/interior/core/db';
-import { CommandCode, Command } from '@jsway/interior/core/console';
+import { DatabaseFactory, Console } from '@jsway/interior';
 
-const DB = new Database();
+const db = new DatabaseFactory();
 
-class CreateAdmin implements Command {
-  async run (): Promise<CommandCode> {
-    const { query } = await DB.connection();
+class CreateAdmin implements Console.Command {
+  async run (): Promise<Console.CommandCode> {
+    const { query } = await db.connection();
     
     const passwordHash = await hash('123456', 5);
     await query(`
