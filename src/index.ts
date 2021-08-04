@@ -8,7 +8,7 @@ import dotenvParse, { Parsed } from 'dotenv-parse-variables';
 import Interior, { ConsoleFactory, importAll } from '@jsway/interior';
 
 import dbConfig from 'config/db';
-import routes from 'config/routes.json';
+import routes from 'config/routes';
 
 setEnv();
 
@@ -51,7 +51,7 @@ const app: Express = express();
     Interior.initHttp(app, {
       publicPath: resolve(APP_PUBLIC_DIR),
       routesConfig: routes,
-      controllersFactory: importAll(require.context('./http/controllers', false, /\.ts$/))
+      controllersFactory: importAll(require.context('./http/controllers', true, /\.ts$/))
     });
     
     const listener = app.listen(APP_PORT, APP_HOST, () => {

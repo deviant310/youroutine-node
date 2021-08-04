@@ -1,6 +1,0 @@
-{
-  "login": "/login",
-  "auth": "/auth",
-  "notes": "/notes",
-  "note": "/notes/:id"
-}
