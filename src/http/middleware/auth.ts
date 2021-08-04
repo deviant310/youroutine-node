@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import routes from 'config/routes';
+import routes from 'config/routes.json';
 
 declare module 'express-session' {
   interface SessionData {
@@ -10,7 +10,7 @@ declare module 'express-session' {
 }
 
 export default function auth (request: Request, response: Response, next: NextFunction): void {
-  const { signIn: signInPath } = routes;
+  const { login: loginPath } = routes;
   const { session, xhr, url } = request;
   const { userId } = session;
   
@@ -18,10 +18,10 @@ export default function auth (request: Request, response: Response, next: NextFu
     next();
   } else {
     if (xhr) {
-      response.status(401).send({ message: 'Unauthorized', redirect: signInPath });
+      response.status(401).send({ message: 'Unauthorized', redirect: loginPath });
     } else {
-      if (url !== signInPath) {
-        response.redirect(signInPath);
+      if (url !== loginPath) {
+        response.redirect(loginPath);
       } else {
         next();
       }

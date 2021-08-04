@@ -1,13 +1,13 @@
 import { randomBytes } from 'crypto';
 import { Request, Response } from 'express';
 
-import { Http, HttpFactory, Model, ModelFactory, Database } from '@jsway/interior';
+import { Http, HttpFactory, Database } from '@jsway/interior';
 
 import auth from 'http/middleware/auth';
 import { json } from 'http/middleware/body-parsers';
-import { apiHeaders as headers } from 'http/middleware/headers';
+import { apiHeaders } from 'http/middleware/headers';
 import UserModel from 'models/user';
-import NoteModel from 'models/note';
+import NoteModel, { NoteScheme } from 'models/note';
 
 interface AuthRequestBody {
   login: string
@@ -15,22 +15,15 @@ interface AuthRequestBody {
 }
 
 interface ModelRequestParams {
-  model: string
   id: number
 }
 
+// нужно переделать как в laravel
+
 type AuthController = Http.Controller<unknown, AuthRequestBody>;
 type ModelController = Http.Controller<ModelRequestParams>;
-type Models = UserModel | NoteModel;
 
-const http = new HttpFactory;
-
-function getModelByRoute (route: string): Model.ModelStatic<Models> | undefined {
-  switch (route) {
-    case 'users': return UserModel;
-    case 'notes': return NoteModel;
-  }
-}
+const http = new HttpFactory();
 
 function getAuthControllers (options: Http.ControllersExtractorOptions): Http.Controllers<AuthController> {
   const { routesConfig: routes } = options;
@@ -66,40 +59,27 @@ function getModelControllers (options: Http.ControllersExtractorOptions): Http.C
   return [
     {
       method: 'get',
-      path: routes.entityIndex,
-      handler: async ({ params }, response: Response) => {
-        const { model: route } = params;
+      path: routes.notes,
+      handler: async (request, response: Response) => {
+        const list = await (new NoteModel()).list() as Database.QueryResult<NoteScheme>;
         
-        const ModelFactoryClass = getModelByRoute(route);
-        
-        if (typeof ModelFactoryClass !== 'undefined') {
-          const list = await (new ModelFactoryClass() as ModelFactory).list() as Database.QueryResult<unknown>;
-          response.send(list.rows);
-        } else {
-          response.status(500).send(`No model class presented for route "${String(route)}"`);
-        }
+        response.send(list.rows);
       }
     },
     {
       method: 'get',
-      path: routes.entityItem,
+      path: routes.note,
       handler: async ({ params }, response: Response) => {
-        const { model: route, id } = params;
+        const { id } = params;
+        const list = await (new NoteModel()).getById(id) as Database.QueryResult<NoteScheme>;
         
-        const ModelClass = getModelByRoute(route);
-        
-        if (typeof ModelClass !== 'undefined') {
-          const item = await (new ModelClass()).getById(id);
-          response.send(item);
-        } else {
-          response.status(500).send(`No model class presented for route "${String(route)}"`);
-        }
+        response.send(list.rows[0]);
       }
     }
   ];
 }
 
 export default [
-  http.setMiddleware(getAuthControllers, headers, json),
-  http.setMiddleware(getModelControllers, headers, json, auth)
+  http.setMiddleware(getAuthControllers, apiHeaders, json),
+  http.setMiddleware(getModelControllers, apiHeaders, json, auth)
 ];

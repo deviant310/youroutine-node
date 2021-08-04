@@ -10,4 +10,5 @@ class NoteModel extends ModelFactory {
   table = 'notes';
 }
 
+export { NoteScheme };
 export default NoteModel;
