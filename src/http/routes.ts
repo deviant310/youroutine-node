@@ -3,8 +3,7 @@ import { Route } from '@jsway/interior';
 Route.register({
   login: { path: '/login' },
   auth: { path: '/auth' },
-  notes: { path: '/notes' },
-  note: { path: '/notes/:id' }
+  notes: { path: '/notes/:id?' }
 }, 'auth');
 
 Route.register({
@@ -13,6 +12,5 @@ Route.register({
 }, 'json', 'apiHeaders');
 
 Route.register({
-  apiNotes: { path: '/api/notes', controller: 'api/notes' },
-  apiNote: { path: '/api/notes/:id', controller: 'api/note' }
+  apiNotes: { path: '/api/notes', controller: 'api/notes/:id?' }
 }, 'json', 'apiHeaders', 'auth');
