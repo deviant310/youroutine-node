@@ -8,7 +8,7 @@ import dotenvParse, { Parsed } from 'dotenv-parse-variables';
 import Interior, { ConsoleFactory, importAll } from '@jsway/interior';
 
 import dbConfig from 'config/db';
-import routes from 'config/routes';
+import 'http/routes';
 
 setEnv();
 

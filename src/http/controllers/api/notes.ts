@@ -1,12 +1,6 @@
-import { Http, HttpFactory, ControllerFactory } from '@jsway/interior';
+import { Controller } from '@jsway/interior';
 
 import NoteModel, { NoteScheme } from 'models/note';
-
-import auth from 'http/middleware/auth';
-import { json } from 'http/middleware/body-parsers';
-import { apiHeaders } from 'http/middleware/headers';
-
-const http = new HttpFactory();
 
 class NotesController extends ControllerFactory {
   async get (filters?: Filters): Response {
