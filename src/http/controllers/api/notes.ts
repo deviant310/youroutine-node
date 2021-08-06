@@ -1,5 +1,4 @@
-import { HttpController } from '@jsway/interior';
-import { HttpValidator } from '@jsway/interior';
+import { HttpController, HttpValidator } from '@jsway/interior';
 
 import NoteModel, { NoteScheme } from 'models/note';
 
@@ -11,25 +10,26 @@ class NotesController extends HttpController implements HttpController.Instance 
       return validator.errors;
     }
     
+    const { filters } = request.params;
+    
     return (new NoteModel()).list(filters);
   }
   
-  async post (data: NoteScheme[]): Response {
+  async post (request: Request): Response {
+    const { body: data } = request;
+    
     return (new NoteModel()).createMany(data);
   }
   
   async put (request: Request): Response {
-    
-    const { id } = requestParams;
-    
-    if (id) {
-      return (new NoteModel()).update(id, requestBody);
-    } else {
-      return (new NoteModel()).updateMany(requestBody);
-    }
+    const { body: data } = request;
+  
+    return (new NoteModel()).updateMany(data);
   }
   
-  async delete (ids: number[]): Response {
+  async delete (request: Request): Response {
+    const { body: ids } = request;
+    
     return (new NoteModel()).deleteMany(ids);
   }
 }

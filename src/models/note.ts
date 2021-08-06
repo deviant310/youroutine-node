@@ -2,6 +2,7 @@ import { ModelFactory } from '@jsway/interior';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface NoteScheme {
+  id: number
   title: string
   description: string
 }

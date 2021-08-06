@@ -5,7 +5,7 @@ import { config as setEnv } from 'dotenv';
 import express, { Express } from 'express';
 import minimist from 'minimist';
 import dotenvParse, { Parsed } from 'dotenv-parse-variables';
-import Interior, { ConsoleFactory, importAll } from '@jsway/interior';
+import Interior, { Http, ConsoleFactory, importAll } from '@jsway/interior';
 
 import dbConfig from 'config/db';
 import 'http/routes';
@@ -48,11 +48,15 @@ const app: Express = express();
     
     process.exit(exitCode);
   } else {
-    Interior.initHttp(app, {
-      publicPath: resolve(APP_PUBLIC_DIR),
-      routesConfig: routes,
-      controllersFactory: importAll(require.context('./http/controllers', true, /\.ts$/))
-    });
+    Http
+      .registerStatic(resolve(APP_PUBLIC_DIR))
+      .registerControllers(
+        importAll(require.context('./http/controllers', true, /\.ts$/))
+      )
+      .registerMiddlewares(
+        importAll(require.context('./http/middlewares', true, /\.ts$/))
+      )
+      .init(app);
     
     const listener = app.listen(APP_PORT, APP_HOST, () => {
       const { address, port } = listener.address() as AddressInfo;
