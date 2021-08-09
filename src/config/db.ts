@@ -1,13 +1,12 @@
+import { DBDriver } from '@jsway/interior';
 import dotenvParse, { Parsed } from 'dotenv-parse-variables';
 
-import { Database } from '@jsway/interior';
-
 const {
-  DB_HOST: dbHost = 'localhost',
-  DB_PORT: dbPort = 5432,
-  DB_NAME: dbName = 'postgres',
-  DB_USER: dbUser = 'postgres',
-  DB_PASSWORD: dbPassword = ''
+  DB_HOST: host = 'localhost',
+  DB_PORT: port = 5432,
+  DB_NAME: database = 'postgres',
+  DB_USER: user = 'postgres',
+  DB_PASSWORD: password = ''
 }: {
   DB_HOST?: string
   DB_PORT?: number
@@ -17,14 +16,15 @@ const {
 } = dotenvParse(process.env as Parsed);
 
 export default {
+  defaultConnection: 'app',
   connections: {
-    default: {
-      driver: 'pgsql' as Database.DriverName,
-      host: dbHost,
-      port: dbPort,
-      database: dbName,
-      user: dbUser,
-      password: dbPassword
+    app: {
+      driver: 'pgsql' as DBDriver.Name,
+      host,
+      port,
+      database,
+      user,
+      password
     }
   }
 };
