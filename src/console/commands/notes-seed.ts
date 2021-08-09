@@ -1,11 +1,11 @@
 import { lorem } from 'faker';
 
-import { DatabaseFactory, Console } from '@jsway/interior';
+import { DB, ConsoleCommand } from '@jsway/interior';
 
-const db = new DatabaseFactory();
+const db = new DB();
 
-class NotesSeed implements Console.Command {
-  async run (): Promise<Console.CommandCode> {
+class NotesSeed extends ConsoleCommand implements ConsoleCommand.Instance {
+  async run (): Promise<ConsoleCommand.Code> {
     const { query } = await db.connection();
     
     await Array.from(Array(3)).reduce(promise => promise.then(async () => {

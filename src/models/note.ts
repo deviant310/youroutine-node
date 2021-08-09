@@ -1,15 +1,15 @@
-import { ModelFactory } from '@jsway/interior';
+import { Model, DBDriverPostgreSQL } from '@jsway/interior';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-interface NoteScheme {
-  id: number
-  title: string
-  description: string
+declare namespace NoteModel {
+  type Schema = {
+    id: number;
+    title: string;
+    description: string;
+  };
 }
 
-class NoteModel extends ModelFactory {
+class NoteModel extends Model<DBDriverPostgreSQL> implements Model.Instance {
   table = 'notes';
 }
 
-export { NoteScheme };
 export default NoteModel;

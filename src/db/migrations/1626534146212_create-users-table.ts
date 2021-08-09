@@ -1,6 +1,6 @@
-import { DatabaseFactory } from '@jsway/interior';
+import { DB } from '@jsway/interior';
 
-const db = new DatabaseFactory();
+const db = new DB();
 
 class CreateUsersTable {
   async up (): Promise<void> {

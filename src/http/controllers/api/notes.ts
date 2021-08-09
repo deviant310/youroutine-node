@@ -1,18 +1,24 @@
-import { HttpController, HttpValidator } from '@jsway/interior';
+import { Request as ExpressRequest } from 'express';
+import { Model, HttpController/*, HttpValidator*/ } from '@jsway/interior';
 
-import NoteModel, { NoteScheme } from 'models/note';
+import NoteModel from 'models/note';
+
+type RequestParams = {
+  filters?: Model.Filter[];
+  select?: Model.Select<NoteModel.Schema>;
+};
 
 class NotesController extends HttpController implements HttpController.Instance {
-  async get (request: Request): Response {
-    const validator = await new HttpValidator(...rules).validate(request);
+  async get (request: ExpressRequest<RequestParams>): Promise<NoteModel.Schema[]> {
+    /*const validator = await new HttpValidator(...rules).validate(request);
     
     if (validator.hasErrors) {
       return validator.errors;
-    }
+    }*/
     
     const { filters } = request.params;
     
-    return (new NoteModel()).list(filters);
+    return (new NoteModel()).list<NoteModel.Schema>(filters);
   }
   
   async post (request: Request): Response {
