@@ -1,19 +1,48 @@
-import { HttpController, HttpValidator } from '@jsway/interior';
+import { Request as ExpressRequest } from 'express';
+import { HttpController/*, HttpValidator*/ } from '@jsway/interior';
 
-import NoteModel, { NoteScheme } from 'models/note';
+import NoteModel from 'models/note';
 
-class NoteController extends HttpController implements HttpController.Instance {
-  async get (id: number): Response {
-    return (new NoteModel()).getById(id);
+type SelectParams = {
+  id: number;
+};
+
+//type CreateBody = NoteModel.Schema[];
+
+class NoteController extends HttpController implements HttpController {
+  async get (request: ExpressRequest<SelectParams>): Promise<NoteModel.Schema> {
+    /*const validator = await new HttpValidator(...rules).validate(request);
+    
+    if (validator.hasErrors) {
+      return validator.errors;
+    }*/
+    
+    const { id } = request.params;
+    
+    return (new NoteModel()).getById<NoteModel.Schema>(id);
   }
   
-  async put (id: number, data: NoteScheme): Response {
-    return (new NoteModel()).update(id, data);
+  post: undefined;
+  put: undefined;
+  delete: undefined;
+  
+  /*async post (request: HttpController.Request<unknown, CreateBody>): Promise<NoteModel.Schema[]> {
+    const { body: data } = request;
+    
+    return (new NoteModel()).createMany(data);
   }
   
-  async delete (id: number): Response {
-    return (new NoteModel()).delete(id);
+  async put (request: Request): Response {
+    const { body: data } = request;
+  
+    return (new NoteModel()).updateMany(data);
   }
+  
+  async delete (request: Request): Response {
+    const { body: ids } = request;
+    
+    return (new NoteModel()).deleteMany(ids);
+  }*/
 }
 
 export default NoteController;

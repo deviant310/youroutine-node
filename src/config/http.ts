@@ -1,35 +1,33 @@
+import { DB } from '@jsway/interior';
 import dotenvParse, { Parsed } from 'dotenv-parse-variables';
 import session from 'express-session';
 import connectPostgreSQLSession from 'connect-pg-simple';
 
 const {
-  DB_HOST: host = 'localhost',
-  DB_PORT: port = 5432,
-  DB_NAME: database = 'postgres',
-  DB_USER: user = 'postgres',
-  DB_PASSWORD: password = ''
+  SESSION_DRIVER: sessionDriver = 'database'
 }: {
-  DB_HOST?: string
-  DB_PORT?: number
-  DB_NAME?: string
-  DB_USER?: string
-  DB_PASSWORD?: string
+  SESSION_DRIVER?: string;
 } = dotenvParse(process.env as Parsed);
 
 export default {
-  defaultSessionDriver: 'db',
+  defaultSessionDriver: sessionDriver,
   sessionDrivers: {
-    db (): session.SessionOptions {
-      const PostgreSQLSession = connectPostgreSQLSession(session);
+    database (): session.SessionOptions {
+      const db = new DB();
+      const { driver, host, port, database, user, password } = db.getConnectionConfig();
+      
+      switch (driver) {
+        case 'pgsql': {
+          const PostgreSQLSession = connectPostgreSQLSession(session);
   
-      return {
-        store: new PostgreSQLSession({
-          conObject: { host, port, database, user, password }
-        }),
-        secret: 'session-secret',
-        saveUninitialized: true,
-        resave: true
-      };
+          return {
+            store: new PostgreSQLSession({ conObject: { host, port, database, user, password } }),
+            secret: 'session-secret',
+            saveUninitialized: true,
+            resave: true
+          };
+        }
+      }
     }
   }
 };

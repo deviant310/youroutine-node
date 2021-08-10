@@ -1,4 +1,4 @@
-import { Model, DBDriverPostgreSQL } from '@jsway/interior';
+import { Model } from '@jsway/interior';
 
 declare namespace NoteModel {
   type Schema = {
@@ -8,7 +8,7 @@ declare namespace NoteModel {
   };
 }
 
-class NoteModel extends Model<DBDriverPostgreSQL> implements Model.Instance {
+class NoteModel extends Model implements Model {
   table = 'notes';
 }
 

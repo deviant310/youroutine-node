@@ -42,8 +42,7 @@ module.exports = {
   mode: WEBPACK_MODE === 'production' ? 'production' : 'development',
   output: {
     path: buildPath,
-    filename: '[name].js',
-    libraryTarget: 'umd'
+    filename: '[name].js'
   },
   resolve: {
     extensions: ['.ts', '.js'],

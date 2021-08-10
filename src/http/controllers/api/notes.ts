@@ -3,13 +3,15 @@ import { Model, HttpController/*, HttpValidator*/ } from '@jsway/interior';
 
 import NoteModel from 'models/note';
 
-type RequestParams = {
+type SelectParams = {
   filters?: Model.Filter[];
   select?: Model.Select<NoteModel.Schema>;
 };
 
-class NotesController extends HttpController implements HttpController.Instance {
-  async get (request: ExpressRequest<RequestParams>): Promise<NoteModel.Schema[]> {
+//type CreateBody = NoteModel.Schema[];
+
+class NotesController extends HttpController implements HttpController {
+  async get (request: ExpressRequest<SelectParams>): Promise<NoteModel.Schema[]> {
     /*const validator = await new HttpValidator(...rules).validate(request);
     
     if (validator.hasErrors) {
@@ -21,7 +23,11 @@ class NotesController extends HttpController implements HttpController.Instance 
     return (new NoteModel()).list<NoteModel.Schema>(filters);
   }
   
-  async post (request: Request): Response {
+  post: undefined;
+  put: undefined;
+  delete: undefined;
+  
+  /*async post (request: HttpController.Request<unknown, CreateBody>): Promise<NoteModel.Schema[]> {
     const { body: data } = request;
     
     return (new NoteModel()).createMany(data);
@@ -37,7 +43,7 @@ class NotesController extends HttpController implements HttpController.Instance 
     const { body: ids } = request;
     
     return (new NoteModel()).deleteMany(ids);
-  }
+  }*/
 }
 
 export default NotesController;

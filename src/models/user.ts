@@ -1,23 +1,25 @@
 import { compare } from 'bcrypt';
+import { DB, DBDriverPostgreSQL, Model } from '@jsway/interior';
 
-import { DatabaseFactory, PostgreSQLDriver, ModelFactory } from '@jsway/interior';
-
-interface UserScheme {
-  id: number
-  name: string
-  password: string
-  email: string
+declare namespace UserModel {
+  type Schema = {
+    id: number;
+    name: string;
+    email: string;
+    password: string;
+    active: boolean;
+  };
 }
 
-const db = new DatabaseFactory();
+const db = new DB();
 
-class UserModel extends ModelFactory {
+class UserModel extends Model implements Model {
   table = 'users';
   
   async authenticate (login: string, password: string): Promise<number> {
-    const connection = await db.connection<PostgreSQLDriver>();
+    const connection = await db.connection<DBDriverPostgreSQL>();
     
-    const { rows } = await connection.query<UserScheme>(`
+    const { rows } = await connection.query<UserModel.Schema>(`
       select * from ${this.table} where email=$1 limit 1
     `, [login]);
     

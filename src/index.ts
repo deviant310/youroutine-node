@@ -13,23 +13,28 @@ import httpConfig from 'config/http';
 setEnv();
 
 const {
+  NODE_ENV = 'development',
   IS_COMMAND = false,
   APP_PUBLIC_DIR = './build/public',
   APP_STORAGE_DIR = './storage',
   APP_HOST = 'localhost',
   APP_PORT = 3000
 }: {
-  IS_COMMAND?: boolean
-  APP_PUBLIC_DIR?: string
-  APP_STORAGE_DIR?: string
-  APP_HOST?: string
-  APP_PORT?: number
+  NODE_ENV?: string;
+  IS_COMMAND?: boolean;
+  APP_PUBLIC_DIR?: string;
+  APP_STORAGE_DIR?: string;
+  APP_HOST?: string;
+  APP_PORT?: number;
 } = dotenvParse(process.env as Parsed);
 
 const app: Express = express();
 
 (async () => {
   Console
+    .setCommandsConfig({
+      allowCommandsExecution: NODE_ENV !== 'production'
+    })
     .setCommands(importAll(require.context('./console/commands', false, /\.ts$/)));
   
   await DB
