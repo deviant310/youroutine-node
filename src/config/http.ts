@@ -3,6 +3,13 @@ import dotenvParse, { Parsed } from 'dotenv-parse-variables';
 import session from 'express-session';
 import connectPostgreSQLSession from 'connect-pg-simple';
 
+declare module 'express-session' {
+  interface SessionData {
+    userId: number;
+    accessToken: string;
+  }
+}
+
 const {
   SESSION_DRIVER: sessionDriver = 'database'
 }: {

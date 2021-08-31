@@ -1,36 +1,17 @@
-import { resolve } from 'path';
+import { Http, HttpController } from '@jsway/interior';
 import { readFileSync } from 'fs';
+import { resolve } from 'path';
 
-import { Http, HttpFactory } from '@jsway/interior';
-
-import auth from 'http/middleware/auth';
-
-const http = new HttpFactory();
-
-function getBaseControllers (options: Http.ControllersExtractorOptions): Http.Controllers {
-  const { routesConfig: routes, publicPath } = options;
+class IndexController extends HttpController implements HttpController {
+  async get (): Promise<Buffer> {
+    const staticPath = Http.getStaticPath();
+    
+    return readFileSync(resolve(staticPath, 'index.html'));
+  }
   
-  const handler = async (): Promise<Buffer> => {
-    return readFileSync(resolve(publicPath, 'index.html'));
-  };
-  
-  return [
-    {
-      method: 'get',
-      path: routes.signIn,
-      handler
-    },
-    {
-      method: 'get',
-      path: routes.entityIndex,
-      handler
-    },
-    {
-      method: 'get',
-      path: routes.entityItem,
-      handler
-    }
-  ];
+  post: undefined;
+  put: undefined;
+  delete: undefined;
 }
 
-export default http.setMiddleware(getBaseControllers, auth);
+export default IndexController;

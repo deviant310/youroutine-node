@@ -1,18 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
-
-import routes from 'config/routes.json';
-
-declare module 'express-session' {
-  interface SessionData {
-    userId: number
-    accessToken: string
-  }
-}
+import { Http } from '@jsway/interior';
 
 export default function auth (request: Request, response: Response, next: NextFunction): void {
-  const { login: loginPath } = routes;
   const { session, xhr, url } = request;
   const { userId } = session;
+  const routeLogin = Http.getRoute('login');
+  const loginPath = routeLogin?.path || '/';
   
   if (typeof userId !== 'undefined') {
     next();

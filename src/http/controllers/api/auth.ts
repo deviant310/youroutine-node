@@ -3,22 +3,30 @@ import { HttpController/*, HttpValidator*/ } from '@jsway/interior';
 
 import UserModel from 'models/user';
 
-type AuthReqBody = {
+type PostRequestBody = {
   login: string;
   password: string;
 };
 
-type AuthResBodySuccess = {
-  accessToken: string;
-};
-
-type AuthResBodyError = {
-  message: string;
-  reason: string;
+type PostResponseBody = {
+  error: boolean;
+  message: string | {
+    accessToken: string;
+  };
 };
 
 class AuthController extends HttpController implements HttpController {
-  async post (request: HttpController.Request<unknown, AuthReqBody>): Promise<AuthResBodySuccess | AuthResBodyError> {
+  async get (request: HttpController.Request): Promise<PostResponseBody> {
+    const { accessToken } = request.session;
+    
+    if (accessToken) {
+      return { error: false, message: { accessToken } };
+    } else {
+      return { error: true, message: 'Unauthorized' };
+    }
+  }
+  
+  async post (request: HttpController.Request<unknown, PostRequestBody>): Promise<PostResponseBody> {
     const { login, password } = request.body;
   
     return (new UserModel())
@@ -29,17 +37,11 @@ class AuthController extends HttpController implements HttpController {
         request.session.userId = userId;
         request.session.accessToken = accessToken;
       
-        return { accessToken };
+        return { error: false, message: { accessToken } };
       })
-      .catch(err => {
-        return {
-          message: 'Unauthenticated',
-          reason: err.message
-        };
-      });
+      .catch(err => ({ error: true, message: err.message }));
   }
   
-  get: undefined;
   put: undefined;
   delete: undefined;
 }
