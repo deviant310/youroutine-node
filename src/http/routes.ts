@@ -1,4 +1,4 @@
-import { Http } from '@jsway/interior';
+import { Http } from '@foobar/nojo';
 
 Http
   .setRoutes({

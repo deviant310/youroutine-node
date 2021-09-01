@@ -1,6 +1,6 @@
 import { resolve } from 'path';
 
-import { DB } from '@jsway/interior';
+import { DB } from '@foobar/nojo';
 import dotenvParse, { Parsed } from 'dotenv-parse-variables';
 import session from 'express-session';
 import connectPostgreSQLSession from 'connect-pg-simple';

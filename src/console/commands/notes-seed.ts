@@ -1,6 +1,6 @@
 import { lorem } from 'faker';
 
-import { DB, ConsoleCommand } from '@jsway/interior';
+import { DB, ConsoleCommand } from '@foobar/nojo';
 
 const db = new DB();
 

@@ -1,7 +1,7 @@
 import { resolve } from 'path';
 import { readFileSync } from 'fs';
 
-import { DB, DBMigration } from '@jsway/interior';
+import { DB, DBMigration } from '@foobar/nojo';
 
 const db = new DB();
 

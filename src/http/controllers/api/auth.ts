@@ -1,5 +1,5 @@
 import { randomBytes } from 'crypto';
-import { HttpController/*, HttpValidator*/ } from '@jsway/interior';
+import { HttpController/*, HttpValidator*/ } from '@foobar/nojo';
 
 import UserModel from 'models/user';
 

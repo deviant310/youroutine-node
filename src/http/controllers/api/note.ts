@@ -1,5 +1,5 @@
 import { Request as ExpressRequest } from 'express';
-import { HttpController/*, HttpValidator*/ } from '@jsway/interior';
+import { HttpController/*, HttpValidator*/ } from '@foobar/nojo';
 
 import NoteModel from 'models/note';
 

@@ -1,4 +1,4 @@
-import { Http, HttpController } from '@jsway/interior';
+import { Http, HttpController } from '@foobar/nojo';
 import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
 

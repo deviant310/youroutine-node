@@ -1,6 +1,6 @@
 import { hash } from 'bcrypt';
 
-import { DB, ConsoleCommand } from '@jsway/interior';
+import { DB, ConsoleCommand } from '@foobar/nojo';
 
 const db = new DB();
 
@@ -12,7 +12,7 @@ class CreateAdmin extends ConsoleCommand implements ConsoleCommand {
     await query(`
       insert into users (name, email, password)
       values ($1, $2, $3)
-  `, ['Admin', 'admin@jsway.ru', passwordHash]);
+  `, ['Admin', 'admin@foobar.ru', passwordHash]);
     
     return 0;
   }

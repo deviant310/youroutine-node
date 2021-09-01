@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { Http } from '@jsway/interior';
+import { Http } from '@foobar/nojo';
 
 export default function auth (request: Request, response: Response, next: NextFunction): void {
   const { session, xhr, url } = request;

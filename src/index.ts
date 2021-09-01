@@ -4,7 +4,7 @@ import { config as setEnv } from 'dotenv';
 import express, { Express } from 'express';
 import minimist from 'minimist';
 import dotenvParse, { Parsed } from 'dotenv-parse-variables';
-import { Console, DB, Http, importAll } from '@jsway/interior';
+import { Console, DB, Http, importAll } from '@foobar/nojo';
 
 import dbConfig from 'config/db';
 import httpConfig from 'config/http';

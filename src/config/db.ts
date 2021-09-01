@@ -1,4 +1,4 @@
-import { DBDriver } from '@jsway/interior';
+import { DBDriver } from '@foobar/nojo';
 import dotenvParse, { Parsed } from 'dotenv-parse-variables';
 
 const {

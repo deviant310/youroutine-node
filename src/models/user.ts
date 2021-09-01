@@ -1,5 +1,5 @@
 import { compare } from 'bcrypt';
-import { DB, DBDriverPostgreSQL, Model } from '@jsway/interior';
+import { DB, DBDriverPostgreSQL, Model } from '@foobar/nojo';
 
 declare namespace UserModel {
   type Schema = {

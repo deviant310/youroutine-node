@@ -1,4 +1,4 @@
-import { Model } from '@jsway/interior';
+import { Model } from '@foobar/nojo';
 
 declare namespace NoteModel {
   type Schema = {
