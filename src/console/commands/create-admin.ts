@@ -4,7 +4,7 @@ import { DB, ConsoleCommand } from '@jsway/interior';
 
 const db = new DB();
 
-class CreateAdmin extends ConsoleCommand implements ConsoleCommand.Instance {
+class CreateAdmin extends ConsoleCommand implements ConsoleCommand {
   async run (): Promise<ConsoleCommand.Code> {
     const { query } = await db.connection();
     

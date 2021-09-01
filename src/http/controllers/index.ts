@@ -1,12 +1,15 @@
 import { Http, HttpController } from '@jsway/interior';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
 
 class IndexController extends HttpController implements HttpController {
-  async get (): Promise<Buffer> {
-    const staticPath = Http.getStaticPath();
+  async get (): Promise<Buffer | undefined> {
+    const staticPath = Http.getConfig().staticPath;
+    const indexPath = resolve(staticPath, 'index.html');
     
-    return readFileSync(resolve(staticPath, 'index.html'));
+    if (existsSync(indexPath)) {
+      return readFileSync(indexPath);
+    }
   }
   
   post: undefined;

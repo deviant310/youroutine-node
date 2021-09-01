@@ -8,8 +8,8 @@ Http
   }, 'auth')
   .setRoutes({
     apiAuth: { path: '/api/auth', controller: 'api/auth' }
-  }, 'json', 'apiHeaders')
+  }, 'json')
   .setRoutes({
     apiNotes: { path: '/api/notes', controller: 'api/notes' },
     apiNote: { path: '/api/notes/:id', controller: 'api/note' }
-  }, 'json', 'apiHeaders', 'auth');
+  }, 'json', 'auth');

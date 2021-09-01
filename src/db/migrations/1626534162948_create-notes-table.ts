@@ -1,8 +1,8 @@
-import { DB } from '@jsway/interior';
+import { DB, DBMigration } from '@jsway/interior';
 
 const db = new DB();
 
-class CreateNotesTable {
+class CreateNotesTable extends DBMigration implements DBMigration {
   async up (): Promise<void> {
     const connection = await db.connection();
     
@@ -15,6 +15,7 @@ class CreateNotesTable {
     `);
   }
   
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   async down (): Promise<void> {
   
   }

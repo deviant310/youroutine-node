@@ -1,5 +1,4 @@
 import { resolve } from 'path';
-import { AddressInfo } from 'net';
 
 import { config as setEnv } from 'dotenv';
 import express, { Express } from 'express';
@@ -15,17 +14,11 @@ setEnv();
 const {
   NODE_ENV = 'development',
   IS_COMMAND = false,
-  APP_PUBLIC_DIR = './build/public',
-  APP_STORAGE_DIR = './storage',
-  APP_HOST = 'localhost',
-  APP_PORT = 3000
+  APP_STORAGE_DIR = './storage'
 }: {
   NODE_ENV?: string;
   IS_COMMAND?: boolean;
-  APP_PUBLIC_DIR?: string;
   APP_STORAGE_DIR?: string;
-  APP_HOST?: string;
-  APP_PORT?: number;
 } = dotenvParse(process.env as Parsed);
 
 const app: Express = express();
@@ -58,12 +51,6 @@ const app: Express = express();
       .setApp(app)
       .setControllers(importAll(require.context('./http/controllers', true, /\.ts$/)))
       .setMiddlewares(importAll(require.context('./http/middlewares', true, /\.ts$/)))
-      .setStaticPath(resolve(APP_PUBLIC_DIR))
       .init();
-    
-    const listener = app.listen(APP_PORT, APP_HOST, () => {
-      const { address, port } = listener.address() as AddressInfo;
-      console.log(`App is running on http://${address}:${port}\n`);
-    });
   }
 })();

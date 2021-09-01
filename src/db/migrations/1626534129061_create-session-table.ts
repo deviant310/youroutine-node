@@ -5,7 +5,7 @@ import { DB, DBMigration } from '@jsway/interior';
 
 const db = new DB();
 
-class CreateSessionTable extends DBMigration implements DBMigration.Instance {
+class CreateSessionTable extends DBMigration implements DBMigration {
   async up (): Promise<void> {
     const queryFilePath = resolve('node_modules', 'connect-pg-simple', 'table.sql');
     const queryString = readFileSync(queryFilePath).toString();
@@ -14,6 +14,7 @@ class CreateSessionTable extends DBMigration implements DBMigration.Instance {
     await connection.query(queryString);
   }
   
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   async down (): Promise<void> {
   
   }
