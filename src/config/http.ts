@@ -23,7 +23,7 @@ const {
   APP_PORT?: number;
   SESSION_DRIVER?: string;
 } = dotenvParse(process.env as Parsed);
-
+//@ TODO вынести sessionDrivers в nojo
 export default {
   host: APP_HOST,
   port: APP_PORT,

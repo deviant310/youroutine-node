@@ -1,5 +1,5 @@
 import { Http } from '@foobar/nojo';
-
+//@ TODO реализовать в виде статичного экспорта маршрутов
 Http
   .setRoutes({
     login: { path: '/login' },
