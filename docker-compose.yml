@@ -5,11 +5,11 @@ services:
     build:
       context: ./
       args:
-        NPM_USER: dunloop
-        NPM_TOKEN: 9ba96cfa9db6def87a11cfd2f048a7629154baf9
-        NPM_EMAIL: dunloop8@gmail.com
-        NPM_REGISTRY: https://npm.pkg.github.com
-        NPM_SCOPE: "@jfxteam"
+        NPM_USER: $NPM_USER
+        NPM_TOKEN: $NPM_TOKEN
+        NPM_EMAIL: $NPM_EMAIL
+        NPM_REGISTRY: $NPM_REGISTRY
+        NPM_SCOPE: $NPM_SCOPE
     command: "npm run start"
     working_dir: /var/www/html
     volumes:

@@ -8,8 +8,8 @@ ARG NPM_SCOPE
 
 WORKDIR /var/www/html
 
-RUN npm i npm-cli-login -g
-RUN npm-cli-login -u $NPM_USER -p $NPM_TOKEN -e $NPM_EMAIL -r $NPM_REGISTRY -s $NPM_SCOPE
+#RUN npm i npm-cli-login -g
+#RUN npm-cli-login -u $NPM_USER -p $NPM_TOKEN -e $NPM_EMAIL -r $NPM_REGISTRY -s $NPM_SCOPE
 
 COPY .npmrc .
 COPY ./package*.json ./
