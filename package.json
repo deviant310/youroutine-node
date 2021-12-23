@@ -1,14 +1,13 @@
 {
   "name": "planner",
   "version": "1.0.0",
-  "description": "",
+  "description": "YouRoutine backend service",
   "private": true,
   "scripts": {
     "start": "node ./scripts/start.js",
     "command": "IS_COMMAND=true node ./scripts/start.js",
     "build": "node ./scripts/build.js",
-    "stage": "git add .",
-    "update": "ncu -u -t greatest \"/^@jfxteam.*$/\" && npm i"
+    "stage": "git add ."
   },
   "pre-commit": [
     "build",
@@ -16,14 +15,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "ssh://git@gitlab.jsway.ru:2022/jsway/planner.git"
+    "url": "ssh://git@gitlab.foobar.team:2022/youroutine/youroutine-node.git"
   },
-  "author": "Anton Lebedev <dunloop8@gmail.com>",
+  "author": "Anton Lebedev <deviant310@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://gitlab.jsway.ru/jsway/planner/issues"
+    "url": "https://gitlab.foobar.team/youroutine/youroutine-node/-/issues"
   },
-  "homepage": "https://gitlab.jsway.ru/jsway/planner/",
+  "homepage": "https://gitlab.foobar.team/youroutine/youroutine-node",
   "dependencies": {
     "bcrypt": "^5.0.0",
     "chalk": "^4.1.0",
