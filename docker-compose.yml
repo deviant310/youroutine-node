@@ -5,12 +5,13 @@ services:
     build:
       context: ./
       args:
-        NPM_USER: $NPM_USER
-        NPM_TOKEN: $NPM_TOKEN
-        NPM_EMAIL: $NPM_EMAIL
-        NPM_REGISTRY: $NPM_REGISTRY
-        NPM_SCOPE: $NPM_SCOPE
-    command: "npm run start"
+        NODE_ENV: $NODE_ENV
+        #NPM_USER: $NPM_USER
+        #NPM_TOKEN: $NPM_TOKEN
+        #NPM_EMAIL: $NPM_EMAIL
+        #NPM_REGISTRY: $NPM_REGISTRY
+        #NPM_SCOPE: $NPM_SCOPE
+    command: "npm start"
     working_dir: /var/www/html
     volumes:
       - ./src:/var/www/html/src

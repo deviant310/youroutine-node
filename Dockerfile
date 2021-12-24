@@ -1,10 +1,10 @@
-FROM node:15.0.1
+FROM node:15
 
-ARG NPM_USER
-ARG NPM_TOKEN
-ARG NPM_EMAIL
-ARG NPM_REGISTRY
-ARG NPM_SCOPE
+#ARG NPM_USER
+#ARG NPM_TOKEN
+#ARG NPM_EMAIL
+#ARG NPM_REGISTRY
+#ARG NPM_SCOPE
 
 WORKDIR /var/www/html
 
@@ -14,6 +14,8 @@ WORKDIR /var/www/html
 #COPY .npmrc .
 COPY ./package*.json ./
 RUN npm i
-#COPY ./src/. ./src/
 COPY ./build/. ./build/
+COPY ./src/. ./src/
+COPY ./storage/. ./storage/
+COPY ./utils/. ./utils/
 #COPY ./*.js ./
