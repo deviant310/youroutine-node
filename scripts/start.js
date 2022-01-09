@@ -32,11 +32,6 @@ const IS_PRODUCTION = NODE_ENV === 'production';
 const buildPath = resolve(APP_BUILD_DIR);
 
 (async () => {
-  if (!IS_PRODUCTION && !IS_COMMAND) {
-    await compile({ watch: true })
-      .catch(process.exit);
-  }
-
   if (IS_COMMAND) {
     serve(buildPath, {
       inspect: APP_DEV_INSPECT_CMD,
@@ -46,6 +41,9 @@ const buildPath = resolve(APP_BUILD_DIR);
     if (IS_PRODUCTION) {
       serve(buildPath);
     } else {
+      await compile({ watch: true })
+        .catch(process.exit);
+      
       demon(buildPath, {
         watchPath: resolve(buildPath, 'index.js'),
         inspect: APP_DEV_INSPECT,
