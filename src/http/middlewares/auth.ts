@@ -6,7 +6,7 @@ export default function auth (request: Request, response: Response, next: NextFu
   const { userId } = session;
   const loginRoute = Http.getConfig().loginRoute;
   const loginPath = loginRoute && Http.getRoute(loginRoute)?.path;
-  const homeRoute = Http.getConfig().homeRoute;
+  //const homeRoute = Http.getConfig().homeRoute;
   
   if (userId !== undefined) {
     next();
